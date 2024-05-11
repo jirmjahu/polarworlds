@@ -1,27 +1,37 @@
 package net.jirmjahu.squidworlds.message;
 
-import lombok.AllArgsConstructor;
 import net.jirmjahu.squidworlds.config.ConfigManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
-@AllArgsConstructor
 public class MessageProvider {
 
     private final ConfigManager defaultConfig;
     private final ConfigManager languageConfigEN;
     private final ConfigManager languageConfigDE;
 
-    public Component getMessage(String message) {
-        var language = this.defaultConfig.getConfiguration().getString("language");
+    public MessageProvider(ConfigManager defaultConfig, ConfigManager languageConfigEN, ConfigManager languageConfigDE) {
+        this.defaultConfig = defaultConfig;
+        this.languageConfigEN = languageConfigEN;
+        this.languageConfigDE = languageConfigDE;
+    }
 
-        ConfigManager config;
-        if (language.equalsIgnoreCase("de")) {
-            config = languageConfigEN;
+    public Component getMessage(String message) {
+        var defaultConfig = this.defaultConfig.getConfiguration();
+        var language = defaultConfig.getString("language");
+
+        ConfigManager configManager;
+        if ("de".equalsIgnoreCase(language)) {
+            configManager = languageConfigEN;
         } else {
-            config = languageConfigDE;
+            configManager = languageConfigDE;
         }
-        return MiniMessage.miniMessage().deserialize(config.getConfiguration().getString("prefix" + config.getConfiguration().getString(message)));
+
+        if (!configManager.getConfiguration().contains(message)) {
+            return null;
+        }
+
+        return MiniMessage.miniMessage().deserialize(configManager.getConfiguration().getString("prefix") + configManager.getConfiguration().getString(message));
     }
 
     public Component getPrefix() {
