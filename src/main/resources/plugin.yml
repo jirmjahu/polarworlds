@@ -1,0 +1,7 @@
+name: SquidWorlds
+version: 1.0.0
+main: net.jirmjahu.squidworlds.SquidWorlds
+author: jirmjahu
+api-version: '1.20'
+commands:
+  test:
