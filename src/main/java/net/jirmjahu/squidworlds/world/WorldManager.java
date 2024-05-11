@@ -21,8 +21,7 @@ public class WorldManager {
         var spawnMobs = config.getBoolean(configPath + "spawnMobs", true);
         var generateStructures = config.getBoolean(configPath + "generateStructures", true);
         var keepSpawnInMemory = config.getBoolean(configPath + "keepSpawnInMemory", true);
-        var spawnLocation = config.getLocation("spawnLocation");
 
-        return new SquidWorld(name, environment, difficulty, generator, seed, worldType, spawnLocation, allowPvP, spawnAnimals, spawnMobs, generateStructures, keepSpawnInMemory);
+        return new SquidWorld(name, environment, difficulty, generator, seed, worldType, allowPvP, spawnAnimals, spawnMobs, generateStructures, keepSpawnInMemory);
     }
 }
