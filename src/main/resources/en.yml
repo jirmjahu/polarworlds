@@ -1,0 +1,18 @@
+prefix: "<dark_gray>» <blue><bold>SquidWorlds </bold><dark_gray>| <reset>"
+no-permission: "<red>You dont have permission to do this"
+no-player: "<red>This player was not found"
+no-world: "<red>This world was not found"
+only-players: "<red>You must be a player!"
+
+command:
+  world:
+    unspecifiedWorldName: "<gray>Du musst einen Welten-Namen angeben<dark_gray>."
+    unspecifiedType: "<gray>Du musst einen Welten-Typen angeben<dark_gray>."
+    alreadyExists: "<gray>Diese Welt existiert bereits<dark_gray>."
+    create-success: "<gray>Du hast die Welt <green><bold>%world%</bold><gray>erfolgreich erstellt<dark_gray>."
+    usage:
+      create: "<gray>/world create <dark_gray>[<gray>Name<dark_gray>]"
+      delete: "<gray>/world delete <dark_gray>[<gray>Name<dark_gray>]]"
+      teleport: "<gray>/world tp <dark_gray>[<gray>Name<dark_gray>]"
+      information: "<gray>/world information <dark_gray>[<gray>Name<dark_gray>]"
+      list: "<gray>/world list"

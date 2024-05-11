@@ -26,7 +26,10 @@ public class SquidWorlds extends JavaPlugin {
         //load configurations and messages
         defaultConfig = new ConfigManager(this, "config.yml");
         worldsConfig = new ConfigManager(this, "worlds.yml");
-        messageProvider = new MessageProvider(defaultConfig, new ConfigManager(this, "de.yml"), new ConfigManager(this, "en.yml"));
+
+        var languageConfigDE = new ConfigManager(this, "de.yml");
+        var languageConfigEN = new ConfigManager(this, "en.yml");
+        messageProvider = new MessageProvider(defaultConfig, languageConfigDE, languageConfigEN);
 
         getCommand("world").setExecutor(new WorldCommand());
 
