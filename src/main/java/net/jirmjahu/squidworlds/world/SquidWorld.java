@@ -2,7 +2,15 @@ package net.jirmjahu.squidworlds.world;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.SneakyThrows;
+import net.jirmjahu.squidworlds.SquidWorlds;
+import net.jirmjahu.squidworlds.world.config.WorldsConfig;
+import net.kyori.adventure.audience.ForwardingAudience;
 import org.bukkit.*;
+import org.bukkit.util.FileUtil;
+import org.codehaus.plexus.util.FileUtils;
+
+import java.io.File;
 
 @Getter
 @AllArgsConstructor
@@ -43,15 +51,35 @@ public class SquidWorld {
         world.setKeepSpawnInMemory(this.keepSpawnInMemory);
         world.setPVP(this.allowPvP);
         world.setDifficulty(this.difficulty);
-        //TODO: save world to config d
+
+        //save the created world into the configuration
+        var config = new WorldsConfig(this);
+        config.saveToConfig();
     }
 
+    @SneakyThrows
     public void delete() {
+        var config = new WorldsConfig(this);
+        var world = Bukkit.getWorld(this.name);
 
+        //remove the world from the config
+        config.removeFromConfig();
+
+        if (world != null) {
+            Bukkit.unloadWorld(world, false);
+        }
+
+        //delete world folder
+        var worldFolder = new File(Bukkit.getWorldContainer(), this.name);
+        FileUtils.deleteDirectory(worldFolder);
     }
 
     public World getWorld() {
         return Bukkit.getWorld(this.name);
+    }
+
+    public int getWorldPlayers() {
+        return (int) Bukkit.getOnlinePlayers().stream().filter(it -> it.getWorld().getName().equals(this.name)).count();
     }
 
     public boolean exits() {

@@ -12,9 +12,22 @@ import org.jetbrains.annotations.NotNull;
 public class TestCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+
         SquidWorld world = new SquidWorld("test", World.Environment.NORMAL, Difficulty.EASY, null, null, WorldType.NORMAL, true, true, true, true, true);
-        world.create();
-        commandSender.sendMessage("Joa ging glaube ich");
+
+        if (args.length == 0) {
+            world.create();
+            commandSender.sendMessage("erstellt");
+            return true;
+        }
+
+
+        if (args[0].equalsIgnoreCase("2")) {
+            world.delete();
+            commandSender.sendMessage("gelöscht ");
+            return true;
+        }
+
         return false;
     }
 }
