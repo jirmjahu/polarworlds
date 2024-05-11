@@ -1,7 +1,7 @@
 package net.jirmjahu.squidworlds;
 
 import lombok.Getter;
-import net.jirmjahu.squidworlds.command.TestCommand;
+import net.jirmjahu.squidworlds.command.WorldCommand;
 import net.jirmjahu.squidworlds.config.ConfigManager;
 import net.jirmjahu.squidworlds.message.MessageProvider;
 import org.bukkit.Bukkit;
@@ -27,7 +27,7 @@ public class SquidWorlds extends JavaPlugin {
         worldsConfig = new ConfigManager(this, "worlds.yml");
         messageProvider = new MessageProvider(defaultConfig, new ConfigManager(this, "de.yml"), new ConfigManager(this, "en.yml"));
 
-        getCommand("test").setExecutor(new TestCommand());
+        getCommand("world").setExecutor(new WorldCommand());
 
         Bukkit.getConsoleSender().sendMessage("[SquidWorlds] The Plugin has been enabled");
     }
