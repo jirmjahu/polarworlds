@@ -28,6 +28,7 @@ public class SquidWorld {
     public void create() {
         var worldCreator = new WorldCreator(this.name);
         worldCreator.environment(this.environment);
+        worldCreator.type(this.worldType);
         worldCreator.generateStructures(this.generateStructures);
 
         if (generator != null) {
@@ -94,7 +95,7 @@ public class SquidWorld {
         return Bukkit.getWorld(this.name);
     }
 
-    public int getWorldPlayers() {
+    public int getOnlinePlayers() {
         return (int) Bukkit.getOnlinePlayers().stream().filter(it -> it.getWorld().getName().equals(this.name)).count();
     }
 

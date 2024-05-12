@@ -4,6 +4,9 @@ import net.jirmjahu.squidworlds.SquidWorlds;
 import org.bukkit.Difficulty;
 import org.bukkit.World;
 import org.bukkit.WorldType;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Set;
 
 public class WorldManager {
 
@@ -23,5 +26,9 @@ public class WorldManager {
         var keepSpawnInMemory = config.getBoolean(configPath + "keepSpawnInMemory", true);
 
         return new SquidWorld(name, environment, difficulty, generator, seed, worldType, allowPvP, spawnAnimals, spawnMobs, generateStructures, keepSpawnInMemory);
+    }
+
+    public @NotNull Set<String> getAllWorlds() {
+        return SquidWorlds.getInstance().getWorldsConfig().getConfiguration().getConfigurationSection("worlds").getKeys(false);
     }
 }

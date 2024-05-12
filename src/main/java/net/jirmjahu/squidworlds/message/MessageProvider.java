@@ -50,6 +50,10 @@ public class MessageProvider {
         return getMessage("no-world");
     }
 
+    public Component getSpecifiedWorldMessage() {
+        return getMessage("no-world-specified");
+    }
+
     public Component getOnlyPlayersMessage() {
         return getMessage("only-players");
     }

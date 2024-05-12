@@ -1,18 +1,32 @@
-prefix: "<dark_gray>» <blue><bold>SquidWorlds </bold><dark_gray>| <reset>"
+prefix: "<dark_gray>[<gradient:#a2d2ff:#7FB5E7>SquidWorlds<dark_gray>] "
 no-permission: "<red>Dazu hast du keine Rechte"
 no-player: "<red>Dieser Spieler wurde nicht gefunden"
 no-world: "<red>Diese Welt wurde nicht gefunden"
 only-players: "<red>Du musst ein Spieler sein!"
+no-world-specified: "<gray>Du musst eine Welt angeben<dark_gray>."
 
 command:
   world:
-    unspecifiedWorldName: "<gray>Du musst einen Welten-Namen angeben<dark_gray>."
-    unspecifiedType: "<gray>Du musst einen Welten-Typen angeben<dark_gray>."
-    alreadyExists: "<gray>Diese Welt existiert bereits<dark_gray>."
-    create-success: "<gray>Du hast die Welt <green><bold>%world% </bold><gray>erfolgreich erstellt<dark_gray>."
+    create:
+      unspecifiedType: "<gray>Du musst einen Welten-Typen angeben<dark_gray>."
+      alreadyExists: "<gray>Diese Welt existiert bereits<dark_gray>."
+      create-success: "<gray>Du hast die Welt <green><bold>%world% </bold><gray>erfolgreich <green>erstellt<dark_gray>."
+    delete:
+      deleted: "<gray>Du hast die Welt <green><bold>%world% </bold><gray>erfolgreich <red>gelöscht<dark_gray>."
+    teleport:
+      teleported: "<gray>Du hast dich erfolgreich in die Welt <green><bold>%world% </bold><gray>teleportiert<dark_gray>."
+    information:
+      header: "<gray>Information about World<dark_gray>: <green>%world%"
+      type: "<gray>World-Type <dark_gray>» <green>%type%"
+      players: "<gray>Online Players<dark_gray>: <green>%players%"
+      mobs: "<gray>Spawn Monsters<dark_gray>: <green>%mobs%"
+      animals: "<gray>Spawn Animals<dark_gray>: <green>%animals%"
+    list:
+      header: "<gray>Es sind aktuell folgende Maps geladen<dark_gray>:"
+      loop: "<dark_gray>- <green>%world%"
     usage:
       create: "<gray>/world create <dark_gray>[<gray>Name<dark_gray>]"
-      delete: "<gray>/world delete <dark_gray>[<gray>Name<dark_gray>]]"
-      teleport: "<gray>/world tp <dark_gray>[<gray>Name<dark_gray>]"
+      delete: "<gray>/world delete <dark_gray>[<gray>Name<dark_gray>]"
+      teleport: "<gray>/world teleport <dark_gray>[<gray>Name<dark_gray>]"
       information: "<gray>/world information <dark_gray>[<gray>Name<dark_gray>]"
       list: "<gray>/world list"

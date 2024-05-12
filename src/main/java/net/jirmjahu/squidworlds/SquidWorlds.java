@@ -5,7 +5,9 @@ import net.jirmjahu.squidworlds.command.WorldCommand;
 import net.jirmjahu.squidworlds.config.ConfigManager;
 import net.jirmjahu.squidworlds.listener.PlayerJoinListener;
 import net.jirmjahu.squidworlds.message.MessageProvider;
+import net.jirmjahu.squidworlds.world.WorldManager;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
@@ -18,6 +20,7 @@ public class SquidWorlds extends JavaPlugin {
     private ConfigManager worldsConfig;
 
     private MessageProvider messageProvider;
+    private WorldManager worldManager;
 
     @Override
     public void onEnable() {
@@ -30,6 +33,8 @@ public class SquidWorlds extends JavaPlugin {
         var languageConfigDE = new ConfigManager(this, "de.yml");
         var languageConfigEN = new ConfigManager(this, "en.yml");
         messageProvider = new MessageProvider(defaultConfig, languageConfigDE, languageConfigEN);
+
+        worldManager = new WorldManager();
 
         getCommand("world").setExecutor(new WorldCommand());
 
