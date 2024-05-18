@@ -1,5 +1,5 @@
 name: SquidWorlds
-version: 1.0.0
+version: 1.0.3
 main: net.jirmjahu.squidworlds.SquidWorlds
 author: jirmjahu
 api-version: '1.20'
