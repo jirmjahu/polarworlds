@@ -7,7 +7,6 @@ import net.jirmjahu.squidworlds.listener.PlayerJoinListener;
 import net.jirmjahu.squidworlds.message.MessageProvider;
 import net.jirmjahu.squidworlds.world.WorldManager;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
@@ -35,6 +34,7 @@ public class SquidWorlds extends JavaPlugin {
         messageProvider = new MessageProvider(defaultConfig, languageConfigDE, languageConfigEN);
 
         worldManager = new WorldManager();
+        worldManager.loadWorlds();
 
         getCommand("world").setExecutor(new WorldCommand());
 

@@ -1,6 +1,7 @@
 package net.jirmjahu.squidworlds.world;
 
 import net.jirmjahu.squidworlds.SquidWorlds;
+import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.World;
 import org.bukkit.WorldType;
@@ -26,6 +27,17 @@ public class WorldManager {
         var keepSpawnInMemory = config.getBoolean(configPath + "keepSpawnInMemory", true);
 
         return new SquidWorld(name, environment, difficulty, generator, seed, worldType, allowPvP, spawnAnimals, spawnMobs, generateStructures, keepSpawnInMemory);
+    }
+
+    public void loadWorlds() {
+        if (!SquidWorlds.getInstance().getWorldsConfig().getConfiguration().contains("worlds")) {
+            return;
+        }
+
+        Bukkit.getConsoleSender().sendMessage("[SquidWorlds] Loading " + getAllWorlds().size() + " worlds...");
+        for (var worldName : getAllWorlds()) {
+            getWorld(worldName).create();
+        }
     }
 
     public @NotNull Set<String> getAllWorlds() {

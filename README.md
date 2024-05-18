@@ -9,7 +9,7 @@
 
 ## Todo:
 
-- [ ] Load worlds on Server startup
+- [x] Load worlds on Server startup
 - [ ] Expand the World Command
 - [ ] World flags
 - [ ] Also add standard Minecraft worlds to the configuration
