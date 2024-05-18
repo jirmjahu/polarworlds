@@ -1,20 +1,16 @@
 package net.jirmjahu.squidworlds.message;
 
+import lombok.AllArgsConstructor;
 import net.jirmjahu.squidworlds.config.ConfigManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
+@AllArgsConstructor
 public class MessageProvider {
 
     private final ConfigManager defaultConfig;
     private final ConfigManager languageConfigEN;
     private final ConfigManager languageConfigDE;
-
-    public MessageProvider(ConfigManager defaultConfig, ConfigManager languageConfigEN, ConfigManager languageConfigDE) {
-        this.defaultConfig = defaultConfig;
-        this.languageConfigEN = languageConfigEN;
-        this.languageConfigDE = languageConfigDE;
-    }
 
     public Component getMessage(String message) {
         var defaultConfig = this.defaultConfig.getConfiguration();

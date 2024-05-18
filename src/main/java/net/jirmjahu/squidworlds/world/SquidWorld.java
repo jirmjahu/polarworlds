@@ -58,17 +58,17 @@ public class SquidWorld {
     public void delete() {
         var world = Bukkit.getWorld(this.name);
 
+        //unload the world
+        if (world != null) {
+            Bukkit.unloadWorld(world, false);
+        }
+
         //remove the world from the config
         var config = SquidWorlds.getInstance().getWorldsConfig().getConfiguration();
         config.set("worlds." + world.getName(), null);
         SquidWorlds.getInstance().getWorldsConfig().saveConfig();
 
-        //unload world
-        if (world != null) {
-            Bukkit.unloadWorld(world, false);
-        }
-
-        //delete world folder
+        //delete the world folder
         var worldFolder = new File(Bukkit.getWorldContainer(), this.name);
         FileUtils.deleteDirectory(worldFolder);
     }
