@@ -21,6 +21,9 @@ command:
       players: "<gray>Online Players<dark_gray>: <green>%players%"
       mobs: "<gray>Spawn Monsters<dark_gray>: <green>%mobs%"
       animals: "<gray>Spawn Animals<dark_gray>: <green>%animals%"
+    import:
+      success: "<gray>Du hast die Welt <green><bold>%world%</bold> <gray>erfolgreich importiert<dark_gray>."
+      alreadyExists: "<gray>Diese Welt existiert bereits<dark_gray>."
     list:
       header: "<gray>Es sind aktuell folgende Maps geladen<dark_gray>:"
       loop: "<dark_gray>- <green>%world%"
@@ -29,4 +32,5 @@ command:
       delete: "<gray>/world delete <dark_gray>[<gray>Name<dark_gray>]"
       teleport: "<gray>/world teleport <dark_gray>[<gray>Name<dark_gray>]"
       information: "<gray>/world information <dark_gray>[<gray>Name<dark_gray>]"
+      import: "<gray>/world import <dark_gray>[<gray>Name<dark_gray>]"
       list: "<gray>/world list"

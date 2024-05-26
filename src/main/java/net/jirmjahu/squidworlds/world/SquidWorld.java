@@ -24,6 +24,7 @@ public class SquidWorld {
     private boolean spawnMobs;
     private boolean generateStructures;
     private boolean keepSpawnInMemory;
+    private boolean loaded;
 
     public void create() {
         var worldCreator = new WorldCreator(this.name);
@@ -49,6 +50,8 @@ public class SquidWorld {
         world.setKeepSpawnInMemory(this.keepSpawnInMemory);
         world.setPVP(this.allowPvP);
         world.setDifficulty(this.difficulty);
+
+        this.loaded = true;
 
         //save the created world into the configuration
         this.save();
@@ -87,8 +90,21 @@ public class SquidWorld {
         config.set(configPath + "spawnMobs", this.spawnMobs);
         config.set(configPath + "generateStructures", this.generateStructures);
         config.set(configPath + "keepSpawnInMemory", this.keepSpawnInMemory);
+        config.set(configPath + "loaded", this.loaded);
 
         SquidWorlds.getInstance().getWorldsConfig().saveConfig();
+    }
+
+    public void load() {
+        this.loaded = true;
+    }
+
+    public void unload() {
+        this.loaded = false;
+        Bukkit.unloadWorld(this.getWorld(), true);
+
+        //set loaded to false in the configuration
+        SquidWorlds.getInstance().getWorldsConfig().getConfiguration().set("worlds." + this.name + "." + "loaded", this.loaded);;
     }
 
     public World getWorld() {

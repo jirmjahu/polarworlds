@@ -2,10 +2,7 @@ package net.jirmjahu.squidworlds.command;
 
 import net.jirmjahu.squidworlds.SquidWorlds;
 import net.jirmjahu.squidworlds.world.SquidWorld;
-import org.bukkit.Bukkit;
-import org.bukkit.Difficulty;
-import org.bukkit.World;
-import org.bukkit.WorldType;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -14,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,7 +26,7 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
         }
 
         if (!player.hasPermission("squidworlds.command.world")) {
-            player.sendMessage(SquidWorlds.getInstance().getMessageProvider().getNoWorldMessage());
+            player.sendMessage(SquidWorlds.getInstance().getMessageProvider().getPermissionMessage());
             return false;
         }
 
@@ -81,7 +79,8 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
                     return false;
             }
 
-            var world = new SquidWorld(args[1], environment, Difficulty.NORMAL, null, null, worldType, true, true, true, true, true);
+            //create world with default and given parameters
+            var world = new SquidWorld(args[1], environment, Difficulty.NORMAL, null, null, worldType, true, true, true, true, true, true);
 
             if (world.exits()) {
                 player.sendMessage("command.world.create.alreadyExists");
@@ -89,7 +88,6 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
             }
 
             world.create();
-
             player.sendMessage(SquidWorlds.getInstance().getMessageProvider().getMessage("command.world.create.create-success").replaceText(it -> it.match("%world%").replacement(world.getName())));
             return true;
         }
@@ -134,17 +132,54 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
                 return false;
             }
 
-            player.sendMessage(SquidWorlds.getInstance().getMessageProvider().getMessage("command.world.information.header"));
-            SquidWorlds.getInstance().getWorldManager().getAllWorlds().forEach(it -> {
-                player.sendMessage(SquidWorlds.getInstance().getMessageProvider().getMessage("command.world.information.loop").replaceText(text -> text.match("%world%").replacement(it)));
-            });
+            var world = SquidWorlds.getInstance().getWorldManager().getWorld(args[1]);
+
+            if (world == null) {
+                player.sendMessage(SquidWorlds.getInstance().getMessageProvider().getNoWorldMessage());
+                return false;
+            }
+
+            player.sendMessage(SquidWorlds.getInstance().getMessageProvider().getMessage("command.world.information.header").replaceText(it -> it.match("%world%").replacement(world.getName())));
+            player.sendMessage(SquidWorlds.getInstance().getMessageProvider().getMessage("command.world.information.type").replaceText(it -> it.match("%type%").replacement(world.getWorldType().getName())));
+            player.sendMessage(SquidWorlds.getInstance().getMessageProvider().getMessage("command.world.information.players").replaceText(it -> it.match("%players%").replacement(String.valueOf(world.getOnlinePlayers()))));
+            player.sendMessage(SquidWorlds.getInstance().getMessageProvider().getMessage("command.world.information.mobs").replaceText(it -> it.match("%mobs%").replacement(String.valueOf(world.isSpawnMobs()))));
+            player.sendMessage(SquidWorlds.getInstance().getMessageProvider().getMessage("command.world.information.animals").replaceText(it -> it.match("%animals%").replacement(String.valueOf(world.isSpawnAnimals()))));
             return true;
         }
 
         if (args[0].equalsIgnoreCase("list")) {
-
+            player.sendMessage(SquidWorlds.getInstance().getMessageProvider().getMessage("command.world.list.header"));
+            SquidWorlds.getInstance().getWorldManager().getWorlds().stream().filter(it -> SquidWorlds.getInstance().getWorldManager().getWorld(it).isLoaded()).forEach(it -> {
+                player.sendMessage(SquidWorlds.getInstance().getMessageProvider().getMessage("command.world.list.loop").replaceText(text -> text.match("%world%").replacement(it)));
+            });
+            return true;
         }
 
+        if (args[0].equalsIgnoreCase("import")) {
+            if (args.length < 2) {
+                player.sendMessage(SquidWorlds.getInstance().getMessageProvider().getSpecifiedWorldMessage());
+                return false;
+            }
+
+            var world = Bukkit.getWorld(args[1]);
+            if (world != null) {
+                player.sendMessage(SquidWorlds.getInstance().getMessageProvider().getMessage("command.world.import.alreadyExists"));
+                return false;
+            }
+
+            if (!(new File(System.getProperty("user.dir") + "/" + args[1])).exists()) {
+                player.sendMessage(SquidWorlds.getInstance().getMessageProvider().getNoWorldMessage());
+                return true;
+            }
+
+            world = Bukkit.createWorld(new WorldCreator(args[1]));
+
+            var generator = world.getGenerator() != null ? world.getGenerator().toString() : null;
+            var sWorld = new SquidWorld(args[1], world.getEnvironment(), world.getDifficulty(), generator, world.getSeed(), world.getWorldType(), world.getPVP(), world.getAllowAnimals(), world.getAllowMonsters(), world.canGenerateStructures(), world.getKeepSpawnInMemory(), true);
+            sWorld.create();
+            player.sendMessage(SquidWorlds.getInstance().getMessageProvider().getMessage("command.world.import.success").replaceText(text -> text.match("%world%").replacement(sWorld.getName())));
+            return true;
+        }
 
         this.sendUsage(player);
         return false;
@@ -155,6 +190,7 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
         player.sendMessage(SquidWorlds.getInstance().getMessageProvider().getMessage("command.world.usage.delete"));
         player.sendMessage(SquidWorlds.getInstance().getMessageProvider().getMessage("command.world.usage.teleport"));
         player.sendMessage(SquidWorlds.getInstance().getMessageProvider().getMessage("command.world.usage.information"));
+        player.sendMessage(SquidWorlds.getInstance().getMessageProvider().getMessage("command.world.usage.import"));
         player.sendMessage(SquidWorlds.getInstance().getMessageProvider().getMessage("command.world.usage.list"));
     }
 
@@ -167,6 +203,7 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
             arg1.add("teleport");
             arg1.add("tp");
             arg1.add("information");
+            arg1.add("import");
             arg1.add("list");
             return arg1;
         }

@@ -25,8 +25,9 @@ public class WorldManager {
         var spawnMobs = config.getBoolean(configPath + "spawnMobs", true);
         var generateStructures = config.getBoolean(configPath + "generateStructures", true);
         var keepSpawnInMemory = config.getBoolean(configPath + "keepSpawnInMemory", true);
+        var loaded = config.getBoolean(configPath + "keepSpawnInMemory", true);
 
-        return new SquidWorld(name, environment, difficulty, generator, seed, worldType, allowPvP, spawnAnimals, spawnMobs, generateStructures, keepSpawnInMemory);
+        return new SquidWorld(name, environment, difficulty, generator, seed, worldType, allowPvP, spawnAnimals, spawnMobs, generateStructures, keepSpawnInMemory, loaded);
     }
 
     public void loadWorlds() {
@@ -34,13 +35,17 @@ public class WorldManager {
             return;
         }
 
-        Bukkit.getConsoleSender().sendMessage("[SquidWorlds] Loading " + getAllWorlds().size() + " worlds...");
-        for (var worldName : getAllWorlds()) {
+        Bukkit.getConsoleSender().sendMessage("[SquidWorlds] Loading " + getWorlds().size() + " worlds...");
+        for (var worldName : getWorlds()) {
+            var world = getWorld(worldName);
+            if (!world.isLoaded()) {
+                return;
+            }
             getWorld(worldName).create();
         }
     }
 
-    public @NotNull Set<String> getAllWorlds() {
+    public @NotNull Set<String> getWorlds() {
         return SquidWorlds.getInstance().getWorldsConfig().getConfiguration().getConfigurationSection("worlds").getKeys(false);
     }
 }
