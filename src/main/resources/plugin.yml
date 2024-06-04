@@ -1,6 +1,6 @@
-name: SquidWorlds
+name: PolarWorlds
 version: 1.0.3
-main: net.jirmjahu.squidworlds.SquidWorlds
+main: net.jirmjahu.polarworlds.PolarWorlds
 author: jirmjahu
 api-version: '1.20'
 commands:

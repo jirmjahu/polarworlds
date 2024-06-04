@@ -1,6 +1,5 @@
-package net.jirmjahu.squidworlds.world;
+package net.jirmjahu.polarworlds.world;
 
-import net.jirmjahu.squidworlds.SquidWorlds;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.World;
@@ -11,8 +10,8 @@ import java.util.Set;
 
 public class WorldManager {
 
-    public SquidWorld getWorld(String name) {
-        var config = SquidWorlds.getInstance().getWorldsConfig().getConfiguration();
+    public PolarWorld getWorld(String name) {
+        var config = net.jirmjahu.polarworlds.PolarWorlds.getInstance().getWorldsConfig().getConfiguration();
         var configPath = "worlds." + name + ".";
 
         var environment = World.Environment.valueOf(config.getString(configPath + "environment", "NORMAL"));
@@ -27,15 +26,15 @@ public class WorldManager {
         var keepSpawnInMemory = config.getBoolean(configPath + "keepSpawnInMemory", true);
         var loaded = config.getBoolean(configPath + "keepSpawnInMemory", true);
 
-        return new SquidWorld(name, environment, difficulty, generator, seed, worldType, allowPvP, spawnAnimals, spawnMobs, generateStructures, keepSpawnInMemory, loaded);
+        return new PolarWorld(name, environment, difficulty, generator, seed, worldType, allowPvP, spawnAnimals, spawnMobs, generateStructures, keepSpawnInMemory, loaded);
     }
 
     public void loadWorlds() {
-        if (!SquidWorlds.getInstance().getWorldsConfig().getConfiguration().contains("worlds")) {
+        if (!net.jirmjahu.polarworlds.PolarWorlds.getInstance().getWorldsConfig().getConfiguration().contains("worlds")) {
             return;
         }
 
-        Bukkit.getConsoleSender().sendMessage("[SquidWorlds] Loading " + getWorlds().size() + " worlds...");
+        Bukkit.getConsoleSender().sendMessage("[PolarWorlds] Loading " + getWorlds().size() + " worlds...");
         for (var worldName : getWorlds()) {
             var world = getWorld(worldName);
             if (!world.isLoaded()) {
@@ -46,6 +45,6 @@ public class WorldManager {
     }
 
     public @NotNull Set<String> getWorlds() {
-        return SquidWorlds.getInstance().getWorldsConfig().getConfiguration().getConfigurationSection("worlds").getKeys(false);
+        return net.jirmjahu.polarworlds.PolarWorlds.getInstance().getWorldsConfig().getConfiguration().getConfigurationSection("worlds").getKeys(false);
     }
 }

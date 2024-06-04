@@ -1,4 +1,4 @@
-prefix: "<dark_gray>[<gradient:#a2d2ff:#7FB5E7>SquidWorlds<dark_gray>] "
+prefix: "<dark_gray>[<gradient:#FBFCFF:#edf6f9>PolarWorlds<dark_gray>] <reset>"
 no-permission: "<red>Dazu hast du keine Rechte"
 no-player: "<red>Dieser Spieler wurde nicht gefunden"
 no-world: "<red>Diese Welt wurde nicht gefunden"

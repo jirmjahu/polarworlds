@@ -1,7 +1,7 @@
-package net.jirmjahu.squidworlds.message;
+package net.jirmjahu.polarworlds.message;
 
 import lombok.AllArgsConstructor;
-import net.jirmjahu.squidworlds.config.ConfigManager;
+import net.jirmjahu.polarworlds.config.ConfigManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 

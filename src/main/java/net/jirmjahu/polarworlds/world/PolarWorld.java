@@ -1,9 +1,8 @@
-package net.jirmjahu.squidworlds.world;
+package net.jirmjahu.polarworlds.world;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import net.jirmjahu.squidworlds.SquidWorlds;
 import org.bukkit.*;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -11,7 +10,7 @@ import java.io.File;
 
 @Getter
 @AllArgsConstructor
-public class SquidWorld {
+public class PolarWorld {
 
     private final String name;
     private final World.Environment environment;
@@ -42,7 +41,7 @@ public class SquidWorld {
 
         var world = worldCreator.createWorld();
         if (world == null) {
-            Bukkit.getConsoleSender().sendMessage("[SquidWorlds] Failed to create world: " + this.name);
+            Bukkit.getConsoleSender().sendMessage("[PolarWorlds] Failed to create world: " + this.name);
             return;
         }
 
@@ -67,9 +66,9 @@ public class SquidWorld {
         }
 
         //remove the world from the config
-        var config = SquidWorlds.getInstance().getWorldsConfig().getConfiguration();
+        var config = net.jirmjahu.polarworlds.PolarWorlds.getInstance().getWorldsConfig().getConfiguration();
         config.set("worlds." + world.getName(), null);
-        SquidWorlds.getInstance().getWorldsConfig().saveConfig();
+        net.jirmjahu.polarworlds.PolarWorlds.getInstance().getWorldsConfig().saveConfig();
 
         //delete the world folder
         var worldFolder = new File(Bukkit.getWorldContainer(), this.name);
@@ -77,7 +76,7 @@ public class SquidWorld {
     }
 
     public void save() {
-        var config = SquidWorlds.getInstance().getWorldsConfig().getConfiguration();
+        var config = net.jirmjahu.polarworlds.PolarWorlds.getInstance().getWorldsConfig().getConfiguration();
         var configPath = "worlds." + this.name + ".";
 
         config.set(configPath + "environment", this.environment.toString());
@@ -92,7 +91,7 @@ public class SquidWorld {
         config.set(configPath + "keepSpawnInMemory", this.keepSpawnInMemory);
         config.set(configPath + "loaded", this.loaded);
 
-        SquidWorlds.getInstance().getWorldsConfig().saveConfig();
+        net.jirmjahu.polarworlds.PolarWorlds.getInstance().getWorldsConfig().saveConfig();
     }
 
     public void load() {
@@ -104,7 +103,7 @@ public class SquidWorld {
         Bukkit.unloadWorld(this.getWorld(), true);
 
         //set loaded to false in the configuration
-        SquidWorlds.getInstance().getWorldsConfig().getConfiguration().set("worlds." + this.name + "." + "loaded", this.loaded);;
+        net.jirmjahu.polarworlds.PolarWorlds.getInstance().getWorldsConfig().getConfiguration().set("worlds." + this.name + "." + "loaded", this.loaded);;
     }
 
     public World getWorld() {
@@ -116,6 +115,6 @@ public class SquidWorld {
     }
 
     public boolean exits() {
-        return SquidWorlds.getInstance().getWorldsConfig().getConfiguration().getStringList("worlds").contains(this.name);
+        return net.jirmjahu.polarworlds.PolarWorlds.getInstance().getWorldsConfig().getConfiguration().getStringList("worlds").contains(this.name);
     }
 }

@@ -1,2 +1,2 @@
-rootProject.name = "SquidWorlds"
+rootProject.name = "PolarWorlds"
 

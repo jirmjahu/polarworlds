@@ -1,19 +1,19 @@
-package net.jirmjahu.squidworlds;
+package net.jirmjahu.polarworlds;
 
 import lombok.Getter;
-import net.jirmjahu.squidworlds.command.WorldCommand;
-import net.jirmjahu.squidworlds.config.ConfigManager;
-import net.jirmjahu.squidworlds.listener.PlayerJoinListener;
-import net.jirmjahu.squidworlds.message.MessageProvider;
-import net.jirmjahu.squidworlds.world.WorldManager;
+import net.jirmjahu.polarworlds.command.WorldCommand;
+import net.jirmjahu.polarworlds.config.ConfigManager;
+import net.jirmjahu.polarworlds.listener.PlayerJoinListener;
+import net.jirmjahu.polarworlds.message.MessageProvider;
+import net.jirmjahu.polarworlds.world.WorldManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
-public class SquidWorlds extends JavaPlugin {
+public class PolarWorlds extends JavaPlugin {
 
     @Getter
-    private static SquidWorlds instance;
+    private static PolarWorlds instance;
 
     private ConfigManager defaultConfig;
     private ConfigManager worldsConfig;
@@ -40,11 +40,11 @@ public class SquidWorlds extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
 
-        Bukkit.getConsoleSender().sendMessage("[SquidWorlds] The Plugin has been enabled");
+        Bukkit.getConsoleSender().sendMessage("[PolarWorlds] The Plugin has been enabled");
     }
 
     @Override
     public void onDisable() {
-        Bukkit.getConsoleSender().sendMessage("[SquidWorlds] The Plugin has been disabled");
+        Bukkit.getConsoleSender().sendMessage("[PolarWorlds] The Plugin has been disabled");
     }
 }

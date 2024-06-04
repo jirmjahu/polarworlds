@@ -1,4 +1,4 @@
-package net.jirmjahu.squidworlds.config;
+package net.jirmjahu.polarworlds.config;
 
 import lombok.Getter;
 import lombok.SneakyThrows;

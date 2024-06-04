@@ -1,6 +1,6 @@
-package net.jirmjahu.squidworlds.listener;
+package net.jirmjahu.polarworlds.listener;
 
-import net.jirmjahu.squidworlds.SquidWorlds;
+import net.jirmjahu.polarworlds.PolarWorlds;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,10 +10,10 @@ public class PlayerJoinListener implements Listener {
 
     @EventHandler
     public void handle(PlayerJoinEvent event) {
-        var spawnWorld = Bukkit.getWorld(SquidWorlds.getInstance().getDefaultConfig().getConfiguration().getString("default-world"));
+        var spawnWorld = Bukkit.getWorld(PolarWorlds.getInstance().getDefaultConfig().getConfiguration().getString("default-world"));
 
         if (spawnWorld == null) {
-            Bukkit.getConsoleSender().sendMessage("[SquidWorlds] The configured spawn world was not found, the spawn position of the player is not changed!");
+            Bukkit.getConsoleSender().sendMessage("[PolarWorlds] The configured spawn world was not found, the spawn position of the player is not changed!");
             return;
         }
 
