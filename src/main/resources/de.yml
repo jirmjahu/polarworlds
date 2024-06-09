@@ -10,11 +10,11 @@ command:
     create:
       unspecifiedType: "<gray>Du musst einen Welten-Typen angeben<dark_gray>."
       alreadyExists: "<gray>Diese Welt existiert bereits<dark_gray>."
-      create-success: "<gray>Du hast die Welt <green><bold>%world% </bold><gray>erfolgreich <green>erstellt<dark_gray>."
+      create-success: "<gray>Du hast die Welt <green>%world% </bold><gray>erfolgreich <green>erstellt<dark_gray>."
     delete:
-      deleted: "<gray>Du hast die Welt <green><bold>%world% </bold><gray>erfolgreich <red>gelöscht<dark_gray>."
+      deleted: "<gray>Du hast die Welt <green>%world% </bold><gray>erfolgreich <red>gelöscht<dark_gray>."
     teleport:
-      teleported: "<gray>Du hast dich erfolgreich in die Welt <green><bold>%world% </bold><gray>teleportiert<dark_gray>."
+      teleported: "<gray>Du hast dich erfolgreich in die Welt <green>%world% </bold><gray>teleportiert<dark_gray>."
     information:
       header: "<gray>Information about World<dark_gray>: <green>%world%"
       type: "<gray>World-Type <dark_gray>» <green>%type%"
@@ -22,11 +22,15 @@ command:
       mobs: "<gray>Spawn Monsters<dark_gray>: <green>%mobs%"
       animals: "<gray>Spawn Animals<dark_gray>: <green>%animals%"
     import:
-      success: "<gray>Du hast die Welt <green><bold>%world%</bold> <gray>erfolgreich importiert<dark_gray>."
+      success: "<gray>Du hast die Welt <green>%world%</bold> <gray>erfolgreich importiert<dark_gray>."
       alreadyExists: "<gray>Diese Welt existiert bereits<dark_gray>."
     list:
       header: "<gray>Es sind aktuell folgende Maps geladen<dark_gray>:"
       loop: "<dark_gray>- <green>%world%"
+    unload:
+      success: "<gray>Du hast die Welt <green>%world% <gray>erfolgreich entladen<dark_gray>."
+    load:
+      success: "<gray>Du hast die Welt <green>%world% <gray>erfolgreich geladen<dark_gray>."
     usage:
       create: "<gray>/world create <dark_gray>[<gray>Name<dark_gray>]"
       delete: "<gray>/world delete <dark_gray>[<gray>Name<dark_gray>]"
