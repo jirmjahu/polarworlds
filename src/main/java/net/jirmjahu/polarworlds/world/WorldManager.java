@@ -1,5 +1,6 @@
 package net.jirmjahu.polarworlds.world;
 
+import net.jirmjahu.polarworlds.PolarWorlds;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.World;
@@ -11,7 +12,7 @@ import java.util.Set;
 public class WorldManager {
 
     public PolarWorld getWorld(String name) {
-        var config = net.jirmjahu.polarworlds.PolarWorlds.getInstance().getWorldsConfig().getConfiguration();
+        var config = PolarWorlds.getInstance().getWorldsConfig().getConfiguration();
         var configPath = "worlds." + name + ".";
 
         var environment = World.Environment.valueOf(config.getString(configPath + "environment", "NORMAL"));
@@ -24,13 +25,13 @@ public class WorldManager {
         var spawnMobs = config.getBoolean(configPath + "spawnMobs", true);
         var generateStructures = config.getBoolean(configPath + "generateStructures", true);
         var keepSpawnInMemory = config.getBoolean(configPath + "keepSpawnInMemory", true);
-        var loaded = config.getBoolean(configPath + "keepSpawnInMemory", true);
+        var loaded = config.getBoolean(configPath + "loaded", true);
 
         return new PolarWorld(name, environment, difficulty, generator, seed, worldType, allowPvP, spawnAnimals, spawnMobs, generateStructures, keepSpawnInMemory, loaded);
     }
 
     public void loadWorlds() {
-        if (!net.jirmjahu.polarworlds.PolarWorlds.getInstance().getWorldsConfig().getConfiguration().contains("worlds")) {
+        if (!PolarWorlds.getInstance().getWorldsConfig().getConfiguration().contains("worlds")) {
             return;
         }
 
@@ -45,6 +46,6 @@ public class WorldManager {
     }
 
     public @NotNull Set<String> getWorlds() {
-        return net.jirmjahu.polarworlds.PolarWorlds.getInstance().getWorldsConfig().getConfiguration().getConfigurationSection("worlds").getKeys(false);
+        return PolarWorlds.getInstance().getWorldsConfig().getConfiguration().getConfigurationSection("worlds").getKeys(false);
     }
 }

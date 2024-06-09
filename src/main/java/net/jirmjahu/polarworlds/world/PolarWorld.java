@@ -3,6 +3,7 @@ package net.jirmjahu.polarworlds.world;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import net.jirmjahu.polarworlds.PolarWorlds;
 import org.bukkit.*;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -66,9 +67,9 @@ public class PolarWorld {
         }
 
         //remove the world from the config
-        var config = net.jirmjahu.polarworlds.PolarWorlds.getInstance().getWorldsConfig().getConfiguration();
+        var config = PolarWorlds.getInstance().getWorldsConfig().getConfiguration();
         config.set("worlds." + world.getName(), null);
-        net.jirmjahu.polarworlds.PolarWorlds.getInstance().getWorldsConfig().saveConfig();
+        PolarWorlds.getInstance().getWorldsConfig().saveConfig();
 
         //delete the world folder
         var worldFolder = new File(Bukkit.getWorldContainer(), this.name);
@@ -76,7 +77,7 @@ public class PolarWorld {
     }
 
     public void save() {
-        var config = net.jirmjahu.polarworlds.PolarWorlds.getInstance().getWorldsConfig().getConfiguration();
+        var config = PolarWorlds.getInstance().getWorldsConfig().getConfiguration();
         var configPath = "worlds." + this.name + ".";
 
         config.set(configPath + "environment", this.environment.toString());
@@ -91,19 +92,21 @@ public class PolarWorld {
         config.set(configPath + "keepSpawnInMemory", this.keepSpawnInMemory);
         config.set(configPath + "loaded", this.loaded);
 
-        net.jirmjahu.polarworlds.PolarWorlds.getInstance().getWorldsConfig().saveConfig();
+        PolarWorlds.getInstance().getWorldsConfig().saveConfig();
     }
 
     public void load() {
         this.loaded = true;
+        PolarWorlds.getInstance().getWorldsConfig().getConfiguration().set("worlds." + this.name + "." + "loaded", true);
+        Bukkit.createWorld(new WorldCreator(this.name));
     }
 
     public void unload() {
         this.loaded = false;
         Bukkit.unloadWorld(this.getWorld(), true);
 
-        //set loaded to false in the configuration
-        net.jirmjahu.polarworlds.PolarWorlds.getInstance().getWorldsConfig().getConfiguration().set("worlds." + this.name + "." + "loaded", this.loaded);;
+        //set loaded to false in the world configuration
+        PolarWorlds.getInstance().getWorldsConfig().getConfiguration().set("worlds." + this.name + "." + "loaded", false);
     }
 
     public World getWorld() {
@@ -115,6 +118,6 @@ public class PolarWorld {
     }
 
     public boolean exits() {
-        return net.jirmjahu.polarworlds.PolarWorlds.getInstance().getWorldsConfig().getConfiguration().getStringList("worlds").contains(this.name);
+        return PolarWorlds.getInstance().getWorldsConfig().getConfiguration().getStringList("worlds").contains(this.name);
     }
 }

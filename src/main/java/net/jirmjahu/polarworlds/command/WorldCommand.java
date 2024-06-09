@@ -1,6 +1,7 @@
 package net.jirmjahu.polarworlds.command;
 
 import net.jirmjahu.polarworlds.PolarWorlds;
+import net.jirmjahu.polarworlds.message.MessageProvider;
 import net.jirmjahu.polarworlds.world.PolarWorld;
 import org.bukkit.*;
 import org.bukkit.command.Command;
@@ -12,21 +13,24 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class WorldCommand implements CommandExecutor, TabCompleter {
 
+    private final MessageProvider messageProvider = PolarWorlds.getInstance().getMessageProvider();
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getOnlyPlayersMessage());
+            sender.sendMessage(messageProvider.getOnlyPlayersMessage());
             return false;
         }
 
         if (!player.hasPermission("polarworlds.command.world")) {
-            player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getPermissionMessage());
+            player.sendMessage(messageProvider.getPermissionMessage());
             return false;
         }
 
@@ -37,12 +41,12 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
 
         if (args[0].equalsIgnoreCase("create")) {
             if (args.length == 1) {
-                player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getSpecifiedWorldMessage());
+                player.sendMessage(messageProvider.getSpecifiedWorldMessage());
                 return false;
             }
 
             if (args.length == 2) {
-                player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getMessage("command.world.create.unspecifiedType"));
+                player.sendMessage(messageProvider.getMessage("command.world.create.unspecifiedType"));
                 return false;
             }
 
@@ -88,86 +92,78 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
             }
 
             world.create();
-            player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getMessage("command.world.create.create-success").replaceText(it -> it.match("%world%").replacement(world.getName())));
+            player.sendMessage(messageProvider.getMessage("command.world.create.create-success").replaceText(it -> it.match("%world%").replacement(world.getName())));
             return true;
         }
 
         if (args[0].equalsIgnoreCase("delete")) {
             if (args.length < 2) {
-                player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getSpecifiedWorldMessage());
+                player.sendMessage(messageProvider.getSpecifiedWorldMessage());
                 return false;
             }
 
-            var world = net.jirmjahu.polarworlds.PolarWorlds.getInstance().getWorldManager().getWorld(args[1]);
+            var world = PolarWorlds.getInstance().getWorldManager().getWorld(args[1]);
             if (!world.exits()) {
-                player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getNoWorldMessage());
+                player.sendMessage(messageProvider.getNoWorldMessage());
                 return false;
             }
 
             world.delete();
-            player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getMessage("command.world.delete.deleted").replaceText(it -> it.match("%world%").replacement(world.getName())));
+            player.sendMessage(messageProvider.getMessage("command.world.delete.deleted").replaceText(it -> it.match("%world%").replacement(world.getName())));
             return true;
         }
 
         if (args[0].equalsIgnoreCase("teleport") || args[0].equalsIgnoreCase("tp")) {
             if (args.length < 2) {
-                player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getSpecifiedWorldMessage());
+                player.sendMessage(messageProvider.getSpecifiedWorldMessage());
                 return false;
             }
 
             var world = Bukkit.getWorld(args[1]);
             if (world == null) {
-                player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getNoWorldMessage());
+                player.sendMessage(messageProvider.getNoWorldMessage());
                 return false;
             }
 
             player.teleport(world.getSpawnLocation());
-            player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getMessage("command.world.teleport.teleported").replaceText(it -> it.match("%world%").replacement(world.getName())));
+            player.sendMessage(messageProvider.getMessage("command.world.teleport.teleported").replaceText(it -> it.match("%world%").replacement(world.getName())));
             return true;
         }
 
         if (args[0].equalsIgnoreCase("information")) {
             if (args.length < 2) {
-                player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getSpecifiedWorldMessage());
+                player.sendMessage(messageProvider.getSpecifiedWorldMessage());
                 return false;
             }
 
-            var world = net.jirmjahu.polarworlds.PolarWorlds.getInstance().getWorldManager().getWorld(args[1]);
+            var world = PolarWorlds.getInstance().getWorldManager().getWorld(args[1]);
             if (world == null) {
-                player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getNoWorldMessage());
+                player.sendMessage(messageProvider.getNoWorldMessage());
                 return false;
             }
 
-            player.sendMessage(PolarWorlds.getInstance().getMessageProvider().getMessage("command.world.information.header").replaceText(it -> it.match("%world%").replacement(world.getName())));
-            player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getMessage("command.world.information.type").replaceText(it -> it.match("%type%").replacement(world.getWorldType().getName())));
-            player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getMessage("command.world.information.players").replaceText(it -> it.match("%players%").replacement(String.valueOf(world.getOnlinePlayers()))));
-            player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getMessage("command.world.information.mobs").replaceText(it -> it.match("%mobs%").replacement(String.valueOf(world.isSpawnMobs()))));
-            player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getMessage("command.world.information.animals").replaceText(it -> it.match("%animals%").replacement(String.valueOf(world.isSpawnAnimals()))));
-            return true;
-        }
-
-        if (args[0].equalsIgnoreCase("list")) {
-            player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getMessage("command.world.list.header"));
-            net.jirmjahu.polarworlds.PolarWorlds.getInstance().getWorldManager().getWorlds().stream().filter(it -> net.jirmjahu.polarworlds.PolarWorlds.getInstance().getWorldManager().getWorld(it).isLoaded()).forEach(it -> {
-                player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getMessage("command.world.list.loop").replaceText(text -> text.match("%world%").replacement(it)));
-            });
+            player.sendMessage(messageProvider.getMessage("command.world.information.header").replaceText(it -> it.match("%world%").replacement(world.getName())));
+            player.sendMessage(messageProvider.getMessage("command.world.information.type").replaceText(it -> it.match("%type%").replacement(world.getWorldType().getName())));
+            player.sendMessage(messageProvider.getMessage("command.world.information.players").replaceText(it -> it.match("%players%").replacement(String.valueOf(world.getOnlinePlayers()))));
+            player.sendMessage(messageProvider.getMessage("command.world.information.mobs").replaceText(it -> it.match("%mobs%").replacement(String.valueOf(world.isSpawnMobs()))));
+            player.sendMessage(messageProvider.getMessage("command.world.information.animals").replaceText(it -> it.match("%animals%").replacement(String.valueOf(world.isSpawnAnimals()))));
             return true;
         }
 
         if (args[0].equalsIgnoreCase("import")) {
             if (args.length < 2) {
-                player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getSpecifiedWorldMessage());
+                player.sendMessage(messageProvider.getSpecifiedWorldMessage());
                 return false;
             }
 
             var world = Bukkit.getWorld(args[1]);
             if (world != null) {
-                player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getMessage("command.world.import.alreadyExists"));
+                player.sendMessage(messageProvider.getMessage("command.world.import.alreadyExists"));
                 return false;
             }
 
             if (!(new File(System.getProperty("user.dir") + "/" + args[1])).exists()) {
-                player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getNoWorldMessage());
+                player.sendMessage(messageProvider.getNoWorldMessage());
                 return true;
             }
 
@@ -176,7 +172,48 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
             var generator = world.getGenerator() != null ? world.getGenerator().toString() : null;
             var sWorld = new PolarWorld(args[1], world.getEnvironment(), world.getDifficulty(), generator, world.getSeed(), world.getWorldType(), world.getPVP(), world.getAllowAnimals(), world.getAllowMonsters(), world.canGenerateStructures(), world.getKeepSpawnInMemory(), true);
             sWorld.create();
-            player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getMessage("command.world.import.success").replaceText(text -> text.match("%world%").replacement(sWorld.getName())));
+            player.sendMessage(messageProvider.getMessage("command.world.import.success").replaceText(text -> text.match("%world%").replacement(sWorld.getName())));
+            return true;
+        }
+
+        if (args[0].equalsIgnoreCase("list")) {
+            player.sendMessage(messageProvider.getMessage("command.world.list.header"));
+            PolarWorlds.getInstance().getWorldManager().getWorlds().stream().filter(it -> PolarWorlds.getInstance().getWorldManager().getWorld(it).isLoaded()).forEach(it -> {
+                player.sendMessage(messageProvider.getMessage("command.world.list.loop").replaceText(text -> text.match("%world%").replacement(it)));
+            });
+            return true;
+        }
+
+        if (args[0].equalsIgnoreCase("unload")) {
+            if (args.length < 2) {
+                player.sendMessage(messageProvider.getSpecifiedWorldMessage());
+                return false;
+            }
+
+            var world = PolarWorlds.getInstance().getWorldManager().getWorld(args[1]);
+            if (!world.exits()) {
+                player.sendMessage(messageProvider.getNoWorldMessage());
+                return false;
+            }
+
+            world.unload();
+            player.sendMessage(messageProvider.getMessage("command.world.unload.success").replaceText(text -> text.match("%world%").replacement(world.getName())));
+            return true;
+        }
+
+        if (args[0].equalsIgnoreCase("load")) {
+            if (args.length < 2) {
+                player.sendMessage(messageProvider.getSpecifiedWorldMessage());
+                return false;
+            }
+
+            var world = PolarWorlds.getInstance().getWorldManager().getWorld(args[1]);
+            if (!world.exits()) {
+                player.sendMessage(messageProvider.getNoWorldMessage());
+            }
+
+            world.load();
+            player.sendMessage(messageProvider.getMessage("command.world.load.success").replaceText(text -> text.match("%world%").replacement(world.getName())));
             return true;
         }
 
@@ -185,12 +222,12 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
     }
 
     private void sendUsage(Player player) {
-        player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getMessage("command.world.usage.create"));
-        player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getMessage("command.world.usage.delete"));
-        player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getMessage("command.world.usage.teleport"));
-        player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getMessage("command.world.usage.information"));
-        player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getMessage("command.world.usage.import"));
-        player.sendMessage(net.jirmjahu.polarworlds.PolarWorlds.getInstance().getMessageProvider().getMessage("command.world.usage.list"));
+        player.sendMessage(messageProvider.getMessage("command.world.usage.create"));
+        player.sendMessage(messageProvider.getMessage("command.world.usage.delete"));
+        player.sendMessage(messageProvider.getMessage("command.world.usage.teleport"));
+        player.sendMessage(messageProvider.getMessage("command.world.usage.information"));
+        player.sendMessage(messageProvider.getMessage("command.world.usage.import"));
+        player.sendMessage(messageProvider.getMessage("command.world.usage.list"));
     }
 
     @Override
@@ -204,6 +241,7 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
             arg1.add("information");
             arg1.add("import");
             arg1.add("list");
+            arg1.add("unload");
             return arg1;
         }
 
@@ -214,12 +252,11 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
             return create;
         }
 
-        if (args.length == 2 && (args[0].equalsIgnoreCase("teleport") || args[0].equalsIgnoreCase("tp") || args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("information"))) {
+        if (args.length == 2 && (args[0].equalsIgnoreCase("teleport") || args[0].equalsIgnoreCase("tp") || args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("information") || args[0].equalsIgnoreCase("unload"))) {
             List<String> args2 = new ArrayList<>();
             Bukkit.getWorlds().forEach(world -> args2.add(world.getName()));
             return args2;
         }
-
         return List.of();
     }
 }
