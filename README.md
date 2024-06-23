@@ -1,12 +1,22 @@
-## About
-- PolarWorlds is a Paper Plugin that allows users to create, customize, and teleport to various worlds with ease.
+# PolarWorlds
 
-## Requirements
-- A server running either Paper or Purpur on version 1.20.4 or above.
+> [!IMPORTANT]  
+> PolarWorlds needs to run on a Paper server with a minimal version of 1.20.4.
+
+## Installation
+
+To install Essentials, follow these steps:
+
+1. Download the latest release from the [releases page](https://github.com/jirmjahu/PolarWorlds/releases).
+2. Place the downloaded JAR file into the `plugins` directory of your Minecraft server.
+3. Restart your server to load the plugin.
+
+## Configuration
+
+You can customize the Language and various options by editing the configuration files located in the `plugins/PolarWorlds` directory.
 
 ## Todo:
-
 - [x] Load worlds on Server startup
-- [ ] Expand the World Command
-- [ ] World flags
-- [ ] Also add standard Minecraft worlds to the configuration
+- [ ] World edit command
+- [ ] Add standard Minecraft worlds to the configuration
+- [ ] Void Generator
