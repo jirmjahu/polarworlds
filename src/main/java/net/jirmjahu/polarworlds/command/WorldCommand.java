@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,12 +24,12 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(messageProvider.getOnlyPlayersMessage());
+            sender.sendMessage(messageProvider.onlyPlayersMessage());
             return false;
         }
 
         if (!player.hasPermission("polarworlds.command.world")) {
-            player.sendMessage(messageProvider.getPermissionMessage());
+            player.sendMessage(messageProvider.noPermissionMessage());
             return false;
         }
 
@@ -41,7 +40,7 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
 
         if (args[0].equalsIgnoreCase("create")) {
             if (args.length == 1) {
-                player.sendMessage(messageProvider.getSpecifiedWorldMessage());
+                player.sendMessage(messageProvider.noSpecifiedWorldMessage());
                 return false;
             }
 
@@ -79,12 +78,11 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
                     environment = World.Environment.THE_END;
                     break;
                 default:
-                    player.sendMessage("gibts nicht");
                     return false;
             }
 
             //create world with default and given parameters
-            var world = new PolarWorld(args[1], environment, Difficulty.NORMAL, null, null, worldType, true, true, true, true, true, true);
+            var world = PolarWorld.builder().name(args[1]).environment(environment).difficulty(Difficulty.NORMAL).generator(null).seed(0L).worldType(worldType).allowPvP(true).spawnAnimals(true).spawnMobs(true).generateStructures(true).loaded(true).build();
 
             if (world.exits()) {
                 player.sendMessage("command.world.create.alreadyExists");
@@ -98,13 +96,13 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
 
         if (args[0].equalsIgnoreCase("delete")) {
             if (args.length < 2) {
-                player.sendMessage(messageProvider.getSpecifiedWorldMessage());
+                player.sendMessage(messageProvider.noSpecifiedWorldMessage());
                 return false;
             }
 
             var world = PolarWorlds.getInstance().getWorldManager().getWorld(args[1]);
             if (!world.exits()) {
-                player.sendMessage(messageProvider.getNoWorldMessage());
+                player.sendMessage(messageProvider.noWorldMessage());
                 return false;
             }
 
@@ -115,13 +113,13 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
 
         if (args[0].equalsIgnoreCase("teleport") || args[0].equalsIgnoreCase("tp")) {
             if (args.length < 2) {
-                player.sendMessage(messageProvider.getSpecifiedWorldMessage());
+                player.sendMessage(messageProvider.noSpecifiedWorldMessage());
                 return false;
             }
 
             var world = Bukkit.getWorld(args[1]);
             if (world == null) {
-                player.sendMessage(messageProvider.getNoWorldMessage());
+                player.sendMessage(messageProvider.noWorldMessage());
                 return false;
             }
 
@@ -132,13 +130,13 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
 
         if (args[0].equalsIgnoreCase("information")) {
             if (args.length < 2) {
-                player.sendMessage(messageProvider.getSpecifiedWorldMessage());
+                player.sendMessage(messageProvider.noSpecifiedWorldMessage());
                 return false;
             }
 
             var world = PolarWorlds.getInstance().getWorldManager().getWorld(args[1]);
             if (world == null) {
-                player.sendMessage(messageProvider.getNoWorldMessage());
+                player.sendMessage(messageProvider.noWorldMessage());
                 return false;
             }
 
@@ -152,7 +150,7 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
 
         if (args[0].equalsIgnoreCase("import")) {
             if (args.length < 2) {
-                player.sendMessage(messageProvider.getSpecifiedWorldMessage());
+                player.sendMessage(messageProvider.noSpecifiedWorldMessage());
                 return false;
             }
 
@@ -163,16 +161,16 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
             }
 
             if (!(new File(System.getProperty("user.dir") + "/" + args[1])).exists()) {
-                player.sendMessage(messageProvider.getNoWorldMessage());
+                player.sendMessage(messageProvider.noWorldMessage());
                 return true;
             }
 
             world = Bukkit.createWorld(new WorldCreator(args[1]));
 
             var generator = world.getGenerator() != null ? world.getGenerator().toString() : null;
-            var sWorld = new PolarWorld(args[1], world.getEnvironment(), world.getDifficulty(), generator, world.getSeed(), world.getWorldType(), world.getPVP(), world.getAllowAnimals(), world.getAllowMonsters(), world.canGenerateStructures(), world.getKeepSpawnInMemory(), true);
-            sWorld.create();
-            player.sendMessage(messageProvider.getMessage("command.world.import.success").replaceText(text -> text.match("%world%").replacement(sWorld.getName())));
+            var polarWorld = PolarWorld.builder().name(args[1]).environment(world.getEnvironment()).difficulty(world.getDifficulty()).generator(generator).seed(world.getSeed()).worldType(world.getWorldType()).allowPvP(world.getPVP()).spawnAnimals(world.getAllowAnimals()).spawnMobs(world.getAllowMonsters()).generateStructures(world.canGenerateStructures()).loaded(true).build();
+            polarWorld.create();
+            player.sendMessage(messageProvider.getMessage("command.world.import.success").replaceText(text -> text.match("%world%").replacement(polarWorld.getName())));
             return true;
         }
 
@@ -186,13 +184,13 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
 
         if (args[0].equalsIgnoreCase("unload")) {
             if (args.length < 2) {
-                player.sendMessage(messageProvider.getSpecifiedWorldMessage());
+                player.sendMessage(messageProvider.noSpecifiedWorldMessage());
                 return false;
             }
 
             var world = PolarWorlds.getInstance().getWorldManager().getWorld(args[1]);
             if (!world.exits()) {
-                player.sendMessage(messageProvider.getNoWorldMessage());
+                player.sendMessage(messageProvider.noWorldMessage());
                 return false;
             }
 
@@ -203,13 +201,13 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
 
         if (args[0].equalsIgnoreCase("load")) {
             if (args.length < 2) {
-                player.sendMessage(messageProvider.getSpecifiedWorldMessage());
+                player.sendMessage(messageProvider.noSpecifiedWorldMessage());
                 return false;
             }
 
             var world = PolarWorlds.getInstance().getWorldManager().getWorld(args[1]);
             if (!world.exits()) {
-                player.sendMessage(messageProvider.getNoWorldMessage());
+                player.sendMessage(messageProvider.noWorldMessage());
             }
 
             world.load();

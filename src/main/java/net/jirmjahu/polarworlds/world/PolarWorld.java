@@ -1,6 +1,7 @@
 package net.jirmjahu.polarworlds.world;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import net.jirmjahu.polarworlds.PolarWorlds;
@@ -10,6 +11,7 @@ import org.codehaus.plexus.util.FileUtils;
 import java.io.File;
 
 @Getter
+@Builder
 @AllArgsConstructor
 public class PolarWorld {
 
@@ -23,7 +25,6 @@ public class PolarWorld {
     private boolean spawnAnimals;
     private boolean spawnMobs;
     private boolean generateStructures;
-    private boolean keepSpawnInMemory;
     private boolean loaded;
 
     public void create() {
@@ -47,7 +48,6 @@ public class PolarWorld {
         }
 
         world.setSpawnFlags(this.spawnMobs, this.spawnAnimals);
-        world.setKeepSpawnInMemory(this.keepSpawnInMemory);
         world.setPVP(this.allowPvP);
         world.setDifficulty(this.difficulty);
 
@@ -69,7 +69,7 @@ public class PolarWorld {
         //remove the world from the config
         var config = PolarWorlds.getInstance().getWorldsConfig().getConfiguration();
         config.set("worlds." + world.getName(), null);
-        PolarWorlds.getInstance().getWorldsConfig().saveConfig();
+        PolarWorlds.getInstance().getWorldsConfig().saveConfiguration();
 
         //delete the world folder
         var worldFolder = new File(Bukkit.getWorldContainer(), this.name);
@@ -89,10 +89,9 @@ public class PolarWorld {
         config.set(configPath + "spawnAnimals", this.spawnAnimals);
         config.set(configPath + "spawnMobs", this.spawnMobs);
         config.set(configPath + "generateStructures", this.generateStructures);
-        config.set(configPath + "keepSpawnInMemory", this.keepSpawnInMemory);
         config.set(configPath + "loaded", this.loaded);
 
-        PolarWorlds.getInstance().getWorldsConfig().saveConfig();
+        PolarWorlds.getInstance().getWorldsConfig().saveConfiguration();
     }
 
     public void load() {

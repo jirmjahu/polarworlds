@@ -39,12 +39,5 @@ public class PolarWorlds extends JavaPlugin {
         getCommand("world").setExecutor(new WorldCommand());
 
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
-
-        Bukkit.getConsoleSender().sendMessage("[PolarWorlds] The Plugin has been enabled");
-    }
-
-    @Override
-    public void onDisable() {
-        Bukkit.getConsoleSender().sendMessage("[PolarWorlds] The Plugin has been disabled");
     }
 }

@@ -15,19 +15,19 @@ public class WorldManager {
         var config = PolarWorlds.getInstance().getWorldsConfig().getConfiguration();
         var configPath = "worlds." + name + ".";
 
-        var environment = World.Environment.valueOf(config.getString(configPath + "environment", "NORMAL"));
-        var difficulty = Difficulty.valueOf(config.getString(configPath + "difficulty", "NORMAL"));
-        var generator = config.getString(configPath + "generator", null);
-        var seed = config.getLong(configPath + "seed", 0);
-        var worldType = WorldType.valueOf(config.getString(configPath + "worldType", "NORMAL"));
-        var allowPvP = config.getBoolean(configPath + "allowPvP", true);
-        var spawnAnimals = config.getBoolean(configPath + "spawnAnimals", true);
-        var spawnMobs = config.getBoolean(configPath + "spawnMobs", true);
-        var generateStructures = config.getBoolean(configPath + "generateStructures", true);
-        var keepSpawnInMemory = config.getBoolean(configPath + "keepSpawnInMemory", true);
-        var loaded = config.getBoolean(configPath + "loaded", true);
-
-        return new PolarWorld(name, environment, difficulty, generator, seed, worldType, allowPvP, spawnAnimals, spawnMobs, generateStructures, keepSpawnInMemory, loaded);
+        return PolarWorld.builder()
+                .name(name)
+                .difficulty(Difficulty.valueOf(config.getString(configPath + "difficulty", "NORMAL")))
+                .environment(World.Environment.valueOf(config.getString(configPath + "environment", "NORMAL")))
+                .generator(config.getString(configPath + "generator", null))
+                .seed(config.getLong(configPath + "seed", 0))
+                .worldType(WorldType.valueOf(config.getString(configPath + "worldType", "NORMAL")))
+                .allowPvP(config.getBoolean(configPath + "allowPvP", true))
+                .spawnAnimals(config.getBoolean(configPath + "spawnAnimals", true))
+                .spawnMobs(config.getBoolean(configPath + "spawnMobs", true))
+                .generateStructures(config.getBoolean(configPath + "generateStructures", true))
+                .loaded(config.getBoolean(configPath + "loaded", true))
+                .build();
     }
 
     public void loadWorlds() {

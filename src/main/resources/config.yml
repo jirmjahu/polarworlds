@@ -2,6 +2,6 @@ language: de
 
 # This is the default world for players who have never been on the server.
 # If a world is deleted and there are still players on the deleted world,
-#  they will also be sent to this world.
+# they will also be sent to this world.
 default-world: "world"
 

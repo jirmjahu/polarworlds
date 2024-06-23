@@ -9,48 +9,53 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 public class MessageProvider {
 
     private final ConfigManager defaultConfig;
-    private final ConfigManager languageConfigEN;
-    private final ConfigManager languageConfigDE;
+    private final ConfigManager messagesDE;
+    private final ConfigManager messagesEN;
 
-    public Component getMessage(String message) {
+    public Component getMessage(String message, boolean prefix) {
         var defaultConfig = this.defaultConfig.getConfiguration();
         var language = defaultConfig.getString("language");
 
-        ConfigManager configManager;
-        if ("de".equalsIgnoreCase(language)) {
-            configManager = languageConfigEN;
-        } else {
-            configManager = languageConfigDE;
+        final var config = "de".equals(language) ? messagesDE : messagesEN;
+
+        if (config == null || !config.getConfiguration().contains(message)) {
+            return MiniMessage.miniMessage().deserialize("<red>Not found");
         }
 
-        if (!configManager.getConfiguration().contains(message)) {
-            return null;
+        var configMessage = config.getConfiguration().getString(message);
+        if (prefix) {
+            configMessage = config.getConfiguration().getString("prefix", "") + configMessage;
         }
 
-        return MiniMessage.miniMessage().deserialize(configManager.getConfiguration().getString("prefix") + configManager.getConfiguration().getString(message));
+        return MiniMessage.miniMessage().deserialize(configMessage);
     }
 
-    public Component getPrefix() {
+
+    public Component getMessage(String message) {
+        return getMessage(message, true);
+    }
+
+    public Component prefix() {
         return getMessage("prefix");
     }
 
-    public Component getPermissionMessage() {
+    public Component noPermissionMessage() {
         return getMessage("no-permission");
     }
 
-    public Component getNoPlayerMessage() {
+    public Component noPlayerMessage() {
         return getMessage("no-player");
     }
 
-    public Component getNoWorldMessage() {
+    public Component noWorldMessage() {
         return getMessage("no-world");
     }
 
-    public Component getSpecifiedWorldMessage() {
+    public Component noSpecifiedWorldMessage() {
         return getMessage("no-world-specified");
     }
 
-    public Component getOnlyPlayersMessage() {
+    public Component onlyPlayersMessage() {
         return getMessage("only-players");
     }
 }
