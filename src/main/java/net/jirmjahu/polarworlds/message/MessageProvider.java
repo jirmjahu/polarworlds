@@ -43,10 +43,6 @@ public class MessageProvider {
         return getMessage("no-permission");
     }
 
-    public Component noPlayerMessage() {
-        return getMessage("no-player");
-    }
-
     public Component noWorldMessage() {
         return getMessage("no-world");
     }
