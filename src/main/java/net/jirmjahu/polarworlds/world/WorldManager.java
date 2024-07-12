@@ -1,12 +1,10 @@
 package net.jirmjahu.polarworlds.world;
 
 import net.jirmjahu.polarworlds.PolarWorlds;
-import org.bukkit.Bukkit;
-import org.bukkit.Difficulty;
-import org.bukkit.World;
-import org.bukkit.WorldType;
+import org.bukkit.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.Set;
 
 public class WorldManager {
@@ -32,20 +30,49 @@ public class WorldManager {
 
     public void loadWorlds() {
         if (!PolarWorlds.getInstance().getWorldsConfig().getConfiguration().contains("worlds")) {
+            Bukkit.getConsoleSender().sendMessage("[PolarWorlds] No worlds to load.");
             return;
         }
 
         Bukkit.getConsoleSender().sendMessage("[PolarWorlds] Loading " + getWorlds().size() + " worlds...");
+
         for (var worldName : getWorlds()) {
             var world = getWorld(worldName);
             if (!world.isLoaded()) {
-                return;
+                continue;
             }
-            getWorld(worldName).create();
+            world.create();
+            Bukkit.getConsoleSender().sendMessage("[PolarWorlds] Successfully loaded world " + worldName + ".");
         }
     }
 
+    public PolarWorld importWorld(String name) {
+        final var world = Bukkit.createWorld(new WorldCreator(name));
+
+        final var generator = world.getGenerator() != null ? world.getGenerator().toString() : null;
+        final var polarWorld = PolarWorld.builder()
+                .name(name)
+                .environment(world.getEnvironment())
+                .difficulty(world.getDifficulty())
+                .generator(generator)
+                .seed(world.getSeed())
+                .worldType(world.getWorldType())
+                .allowPvP(world.getPVP())
+                .spawnAnimals(world.getAllowAnimals())
+                .spawnMobs(world.getAllowMonsters())
+                .generateStructures(world.canGenerateStructures())
+                .loaded(true)
+                .build();
+
+        polarWorld.create();
+        return polarWorld;
+    }
+
     public @NotNull Set<String> getWorlds() {
-        return PolarWorlds.getInstance().getWorldsConfig().getConfiguration().getConfigurationSection("worlds").getKeys(false);
+        final var config = PolarWorlds.getInstance().getWorldsConfig().getConfiguration();
+        if (config == null || !config.isConfigurationSection("worlds")) {
+            return Collections.emptySet();
+        }
+        return config.getConfigurationSection("worlds").getKeys(false);
     }
 }

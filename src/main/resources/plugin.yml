@@ -1,5 +1,5 @@
 name: PolarWorlds
-version: 1.0.3
+version: 1.0.7
 main: net.jirmjahu.polarworlds.PolarWorlds
 author: jirmjahu
 api-version: '1.20'

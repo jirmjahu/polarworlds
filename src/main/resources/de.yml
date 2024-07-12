@@ -1,6 +1,5 @@
-prefix: "<dark_gray>[<gradient:#FBFCFF:#edf6f9>PolarWorlds<dark_gray>] <reset>"
+prefix: "<dark_gray>» <gradient:#D4DEE7:#FFFFFF>PolarWorlds</gradient> <dark_gray>| "
 no-permission: "<red>Dazu hast du keine Rechte"
-no-player: "<red>Dieser Spieler wurde nicht gefunden"
 no-world: "<red>Diese Welt wurde nicht gefunden"
 only-players: "<red>Du musst ein Spieler sein!"
 no-world-specified: "<gray>Du musst eine Welt angeben<dark_gray>."
@@ -10,15 +9,15 @@ command:
     create:
       unspecifiedType: "<gray>Du musst einen Welten-Typen angeben<dark_gray>."
       alreadyExists: "<gray>Diese Welt existiert bereits<dark_gray>."
-      create-success: "<gray>Du hast die Welt <green>%world%<gray>erfolgreich <green>erstellt<dark_gray>."
+      create-success: "<gray>Du hast die Welt <green>%world% <gray>erfolgreich <green>erstellt<dark_gray>."
     delete:
       deleted: "<gray>Du hast die Welt <green>%world%<gray>erfolgreich <red>gelöscht<dark_gray>."
     teleport:
-      teleported: "<gray>Du hast dich erfolgreich in die Welt <green>%world%<gray>teleportiert<dark_gray>."
+      teleported: "<gray>Du hast dich erfolgreich in die Welt <green>%world% <gray>teleportiert<dark_gray>."
     information:
-      header: "<gray>Information about World<dark_gray>: <green>%world%"
+      header: "<gray>Information über die Welt<dark_gray>: <green>%world%"
       type: "<gray>World-Type <dark_gray>» <green>%type%"
-      players: "<gray>Online Players<dark_gray>: <green>%players%"
+      players: "<gray>Online Spieler<dark_gray>: <green>%players%"
       mobs: "<gray>Spawn Monsters<dark_gray>: <green>%mobs%"
       animals: "<gray>Spawn Animals<dark_gray>: <green>%animals%"
     import:
@@ -38,3 +37,5 @@ command:
       information: "<gray>/world information <dark_gray>[<gray>Name<dark_gray>]"
       import: "<gray>/world import <dark_gray>[<gray>Name<dark_gray>]"
       list: "<gray>/world list"
+      unload: "<gray>/world unload <dark_gray>[<gray>Name<dark_gray>]"
+      load: "<gray>/world load <dark_gray>[<gray>Name<dark_gray>]"

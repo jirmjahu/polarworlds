@@ -1,9 +1,6 @@
 package net.jirmjahu.polarworlds.world;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.SneakyThrows;
+import lombok.*;
 import net.jirmjahu.polarworlds.PolarWorlds;
 import org.bukkit.*;
 import org.codehaus.plexus.util.FileUtils;
@@ -11,6 +8,7 @@ import org.codehaus.plexus.util.FileUtils;
 import java.io.File;
 
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 public class PolarWorld {
@@ -112,11 +110,7 @@ public class PolarWorld {
         return Bukkit.getWorld(this.name);
     }
 
-    public int getOnlinePlayers() {
-        return (int) Bukkit.getOnlinePlayers().stream().filter(it -> it.getWorld().getName().equals(this.name)).count();
-    }
-
-    public boolean exits() {
-        return PolarWorlds.getInstance().getWorldsConfig().getConfiguration().getStringList("worlds").contains(this.name);
+    public boolean exists() {
+        return PolarWorlds.getInstance().getWorldManager().getWorlds().contains(this.name);
     }
 }
