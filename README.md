@@ -5,7 +5,7 @@
 
 ## Installation
 
-To install Essentials, follow these steps:
+To install PolarWorlds, follow these steps:
 
 1. Download the latest release from the [releases page](https://github.com/jirmjahu/PolarWorlds/releases).
 2. Place the downloaded JAR file into the `plugins` directory of your Minecraft server.
