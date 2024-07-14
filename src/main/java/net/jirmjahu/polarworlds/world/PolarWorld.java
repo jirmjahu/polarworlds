@@ -2,6 +2,7 @@ package net.jirmjahu.polarworlds.world;
 
 import lombok.*;
 import net.jirmjahu.polarworlds.PolarWorlds;
+import net.jirmjahu.polarworlds.generator.EmptyChunkGenerator;
 import org.bukkit.*;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -31,7 +32,9 @@ public class PolarWorld {
         worldCreator.type(this.worldType);
         worldCreator.generateStructures(this.generateStructures);
 
-        if (generator != null) {
+        if ("void".equals(this.generator)) {
+            worldCreator.generator(new EmptyChunkGenerator());
+        } else if (this.generator != null) {
             worldCreator.generator(this.generator);
         }
 

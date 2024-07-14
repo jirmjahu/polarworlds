@@ -11,7 +11,7 @@ command:
       alreadyExists: "<gray>Diese Welt existiert bereits<dark_gray>."
       create-success: "<gray>Du hast die Welt <green>%world% <gray>erfolgreich <green>erstellt<dark_gray>."
     delete:
-      deleted: "<gray>Du hast die Welt <green>%world%<gray>erfolgreich <red>gelöscht<dark_gray>."
+      deleted: "<gray>Du hast die Welt <green>%world% <gray>erfolgreich <red>gelöscht<dark_gray>."
     teleport:
       teleported: "<gray>Du hast dich erfolgreich in die Welt <green>%world% <gray>teleportiert<dark_gray>."
     information:

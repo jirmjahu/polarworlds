@@ -1,12 +1,11 @@
 package net.jirmjahu.polarworlds.command;
 
 import net.jirmjahu.polarworlds.PolarWorlds;
+import net.jirmjahu.polarworlds.generator.EmptyChunkGenerator;
 import net.jirmjahu.polarworlds.message.MessageProvider;
 import net.jirmjahu.polarworlds.world.PolarWorld;
-import org.bukkit.Bukkit;
-import org.bukkit.Difficulty;
-import org.bukkit.World;
-import org.bukkit.WorldType;
+import org.bukkit.*;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,6 +18,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class WorldCommand implements CommandExecutor, TabCompleter {
 
@@ -73,6 +74,7 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
 
         WorldType worldType;
         World.Environment environment;
+        String generator = null;
 
         switch (args[2].toLowerCase()) {
             case "normal":
@@ -99,6 +101,11 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
                 worldType = WorldType.NORMAL;
                 environment = World.Environment.THE_END;
                 break;
+            case "void":
+                worldType = WorldType.NORMAL;
+                environment = World.Environment.NORMAL;
+                generator = new EmptyChunkGenerator().name();
+                break;
             default:
                 sendUsage(player);
                 return false;
@@ -108,7 +115,7 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
                 .name(args[1])
                 .environment(environment)
                 .difficulty(Difficulty.NORMAL)
-                .generator(null)
+                .generator(generator)
                 .seed(0L)
                 .worldType(worldType)
                 .allowPvP(true)
@@ -124,6 +131,13 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
         }
 
         world.create();
+
+        if (world.getGenerator() != null) {
+            if (world.getGenerator().equals("void")) {
+                world.getWorld().setBlockData(world.getWorld().getSpawnLocation(), Material.BEDROCK.createBlockData());
+            }
+        }
+
         player.sendMessage(messageProvider.getMessage("command.world.create.create-success").replaceText(it -> it.match("%world%").replacement(world.getName())));
         return true;
     }
@@ -212,12 +226,13 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
     private boolean handleList(Player player) {
         player.sendMessage(messageProvider.getMessage("command.world.list.header"));
 
-        if (PolarWorlds.getInstance().getWorldManager().getWorlds().isEmpty()) {
+        var worlds = PolarWorlds.getInstance().getWorldManager().getWorlds();
+        if (worlds.isEmpty()) {
             player.sendMessage(messageProvider.getMessage("command.world.list.noWorlds"));
             return true;
         }
 
-        PolarWorlds.getInstance().getWorldManager().getWorlds().stream()
+        worlds.stream()
                 .filter(worldName -> PolarWorlds.getInstance().getWorldManager().getWorld(worldName).isLoaded())
                 .forEach(worldName -> player.sendMessage(messageProvider.getMessage("command.world.list.loop").replaceText(text -> text.match("%world%").replacement(worldName))));
         return true;
@@ -254,14 +269,9 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
             return false;
         }
 
-
         world.load();
         player.sendMessage(messageProvider.getMessage("command.world.load.success").replaceText(text -> text.match("%world%").replacement(world.getName())));
         return true;
-    }
-
-    private boolean handleEdit(Player player, String[] args) {
-        return false;
     }
 
     private void teleportToDefaultWorld(Player player, PolarWorld world) {
@@ -293,20 +303,19 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
         }
 
         if (args.length == 3 && args[0].equalsIgnoreCase("import")) {
-            return Arrays.asList("-force");
+            return List.of("-force");
         }
 
         if (args.length == 3 && args[0].equalsIgnoreCase("create")) {
             List<String> create = new ArrayList<>();
             Arrays.stream(World.Environment.values()).forEach(it -> create.add(it.name().toLowerCase()));
             Arrays.stream(WorldType.values()).forEach(it -> create.add(it.name().toLowerCase()));
+            create.add("void");
             return create;
         }
 
         if (args.length == 2 && Arrays.asList("teleport", "tp", "delete", "information", "unload", "load").contains(args[0].toLowerCase())) {
-            List<String> args2 = new ArrayList<>();
-            Bukkit.getWorlds().forEach(world -> args2.add(world.getName()));
-            return args2;
+            return Bukkit.getWorlds().stream().map(World::getName).collect(Collectors.toList());
         }
 
         return List.of();
