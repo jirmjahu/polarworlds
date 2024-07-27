@@ -5,7 +5,6 @@ author: jirmjahu
 api-version: '1.20'
 commands:
   world:
-    description:
     permission: polarworlds.command.world
     aliases:
       - pw

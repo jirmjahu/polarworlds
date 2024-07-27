@@ -44,7 +44,7 @@ public class PolarWorld {
 
         var world = worldCreator.createWorld();
         if (world == null) {
-            Bukkit.getConsoleSender().sendMessage("[PolarWorlds] Failed to create world: " + this.name);
+            PolarWorlds.getInstance().getLogger().warning("[PolarWorlds] Failed to create world: " + this.name);
             return;
         }
 

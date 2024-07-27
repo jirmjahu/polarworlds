@@ -1,11 +1,11 @@
 package net.jirmjahu.polarworlds.command;
 
+import lombok.RequiredArgsConstructor;
 import net.jirmjahu.polarworlds.PolarWorlds;
 import net.jirmjahu.polarworlds.generator.EmptyChunkGenerator;
 import net.jirmjahu.polarworlds.message.MessageProvider;
 import net.jirmjahu.polarworlds.world.PolarWorld;
 import org.bukkit.*;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,12 +18,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 public class WorldCommand implements CommandExecutor, TabCompleter {
 
-    private final MessageProvider messageProvider = PolarWorlds.getInstance().getMessageProvider();
+    private final PolarWorlds plugin;
+    private final MessageProvider messageProvider;
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -38,30 +39,30 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
         }
 
         if (args.length == 0) {
-            sendUsage(player);
+            this.sendUsage(player);
             return false;
         }
 
         switch (args[0].toLowerCase()) {
             case "create":
-                return handleCreate(player, args);
+                return this.handleCreate(player, args);
             case "delete":
-                return handleDelete(player, args);
+                return this.handleDelete(player, args);
             case "teleport":
             case "tp":
-                return handleTeleport(player, args);
+                return this.handleTeleport(player, args);
             case "information":
-                return handleInformation(player, args);
+                return this.handleInformation(player, args);
             case "import":
-                return handleImport(player, args);
+                return this.handleImport(player, args);
             case "list":
-                return handleList(player);
+                return this.handleList(player);
             case "unload":
-                return handleUnload(player, args);
+                return this.handleUnload(player, args);
             case "load":
-                return handleLoad(player, args);
+                return this.handleLoad(player, args);
             default:
-                sendUsage(player);
+                this.sendUsage(player);
                 return false;
         }
     }
@@ -111,19 +112,8 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
                 return false;
         }
 
-        PolarWorld world = PolarWorld.builder()
-                .name(args[1])
-                .environment(environment)
-                .difficulty(Difficulty.NORMAL)
-                .generator(generator)
-                .seed(0L)
-                .worldType(worldType)
-                .allowPvP(true)
-                .spawnAnimals(true)
-                .spawnMobs(true)
-                .generateStructures(true)
-                .loaded(true)
-                .build();
+        //create world with given arguments
+        var world = PolarWorld.builder().name(args[1]).environment(environment).difficulty(Difficulty.NORMAL).generator(generator).seed(0L).worldType(worldType).allowPvP(true).spawnAnimals(true).spawnMobs(true).generateStructures(true).loaded(true).build();
 
         if (world.exists()) {
             player.sendMessage(messageProvider.getMessage("command.world.create.alreadyExists"));
@@ -134,6 +124,7 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
 
         if (world.getGenerator() != null) {
             if (world.getGenerator().equals("void")) {
+                //place a bedrock block at the world spawn if the generator is void
                 world.getWorld().setBlockData(world.getWorld().getSpawnLocation(), Material.BEDROCK.createBlockData());
             }
         }
@@ -148,7 +139,7 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
             return false;
         }
 
-        final var world = PolarWorlds.getInstance().getWorldManager().getWorld(args[1]);
+        final var world = plugin.getWorldManager().getWorld(args[1]);
         if (!world.exists()) {
             player.sendMessage(messageProvider.noWorldMessage());
             return false;
@@ -184,7 +175,7 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
             return false;
         }
 
-        final var world = PolarWorlds.getInstance().getWorldManager().getWorld(args[1]);
+        final var world = plugin.getWorldManager().getWorld(args[1]);
         if (world == null) {
             player.sendMessage(messageProvider.noWorldMessage());
             return false;
@@ -217,7 +208,7 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        final var polarWorld = PolarWorlds.getInstance().getWorldManager().importWorld(args[1]);
+        final var polarWorld = plugin.getWorldManager().importWorld(args[1]);
 
         player.sendMessage(messageProvider.getMessage("command.world.import.success").replaceText(text -> text.match("%world%").replacement(polarWorld.getName())));
         return true;
@@ -226,15 +217,13 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
     private boolean handleList(Player player) {
         player.sendMessage(messageProvider.getMessage("command.world.list.header"));
 
-        var worlds = PolarWorlds.getInstance().getWorldManager().getWorlds();
+        var worlds = plugin.getWorldManager().getWorlds();
         if (worlds.isEmpty()) {
             player.sendMessage(messageProvider.getMessage("command.world.list.noWorlds"));
             return true;
         }
 
-        worlds.stream()
-                .filter(worldName -> PolarWorlds.getInstance().getWorldManager().getWorld(worldName).isLoaded())
-                .forEach(worldName -> player.sendMessage(messageProvider.getMessage("command.world.list.loop").replaceText(text -> text.match("%world%").replacement(worldName))));
+        worlds.stream().filter(worldName -> plugin.getWorldManager().getWorld(worldName).isLoaded()).forEach(worldName -> player.sendMessage(messageProvider.getMessage("command.world.list.loop").replaceText(text -> text.match("%world%").replacement(worldName))));
         return true;
     }
 
@@ -244,7 +233,7 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
             return false;
         }
 
-        PolarWorld world = PolarWorlds.getInstance().getWorldManager().getWorld(args[1]);
+        PolarWorld world = plugin.getWorldManager().getWorld(args[1]);
         if (!world.exists()) {
             player.sendMessage(messageProvider.noWorldMessage());
             return false;
@@ -263,7 +252,7 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
             return false;
         }
 
-        PolarWorld world = PolarWorlds.getInstance().getWorldManager().getWorld(args[1]);
+        PolarWorld world = plugin.getWorldManager().getWorld(args[1]);
         if (!world.exists()) {
             player.sendMessage(messageProvider.noWorldMessage());
             return false;
@@ -275,9 +264,9 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
     }
 
     private void teleportToDefaultWorld(Player player, PolarWorld world) {
-        final var defaultWorld = Bukkit.getWorld(PolarWorlds.getInstance().getDefaultConfig().getConfiguration().getString("default-world"));
+        final var defaultWorld = Bukkit.getWorld(plugin.getDefaultConfig().getConfiguration().getString("default-world"));
         if (defaultWorld == null) {
-            Bukkit.getConsoleSender().sendMessage("[PolarWorlds] The configured default world was not found, can't kick players of the world " + world.getName() + "!");
+            plugin.getLogger().warning("[PolarWorlds] The configured default world was not found, can't kick players of the world " + world.getName() + "!");
         } else {
             for (Player all : world.getWorld().getPlayers()) {
                 all.teleport(defaultWorld.getSpawnLocation());

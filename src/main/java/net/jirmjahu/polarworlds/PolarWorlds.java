@@ -26,18 +26,19 @@ public class PolarWorlds extends JavaPlugin {
         instance = this;
 
         //load configurations and messages
-        defaultConfig = new ConfigManager(this, "config.yml");
-        worldsConfig = new ConfigManager(this, "worlds.yml");
+        this.defaultConfig = new ConfigManager(this, "config.yml");
+        this.worldsConfig = new ConfigManager(this, "worlds.yml");
 
-        var languageConfigDE = new ConfigManager(this, "de.yml");
-        var languageConfigEN = new ConfigManager(this, "en.yml");
-        messageProvider = new MessageProvider(defaultConfig, languageConfigDE, languageConfigEN);
+        //load language files and messages
+        final var languageConfigDE = new ConfigManager(this, "de.yml");
+        final var languageConfigEN = new ConfigManager(this, "en.yml");
+        this.messageProvider = new MessageProvider(defaultConfig, languageConfigDE, languageConfigEN);
 
-        worldManager = new WorldManager();
-        worldManager.loadWorlds();
+        this.worldManager = new WorldManager(this, this.worldsConfig);
+        this.worldManager.loadWorlds();
 
-        getCommand("world").setExecutor(new WorldCommand());
+        getCommand("world").setExecutor(new WorldCommand(this, this.messageProvider));
 
-        Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(this, this.defaultConfig), this);
     }
 }
