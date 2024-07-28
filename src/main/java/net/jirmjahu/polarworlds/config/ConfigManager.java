@@ -29,12 +29,12 @@ public class ConfigManager {
         this.configuration = YamlConfiguration.loadConfiguration(configFile);
     }
 
-    public void reloadConfiguration() {
+    public void reload() {
         configuration = YamlConfiguration.loadConfiguration(configFile);
     }
 
     @SneakyThrows
-    public void saveConfiguration() {
+    public void save() {
         this.configuration.save(configFile);
     }
 }

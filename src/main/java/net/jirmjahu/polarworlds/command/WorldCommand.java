@@ -5,7 +5,11 @@ import net.jirmjahu.polarworlds.PolarWorlds;
 import net.jirmjahu.polarworlds.generator.EmptyChunkGenerator;
 import net.jirmjahu.polarworlds.message.MessageProvider;
 import net.jirmjahu.polarworlds.world.PolarWorld;
-import org.bukkit.*;
+import net.jirmjahu.polarworlds.world.WorldManager;
+import net.jirmjahu.polarworlds.world.WorldMeta;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.WorldType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -24,6 +28,7 @@ import java.util.stream.Collectors;
 public class WorldCommand implements CommandExecutor, TabCompleter {
 
     private final PolarWorlds plugin;
+    private final WorldManager worldManager;
     private final MessageProvider messageProvider;
 
     @Override
@@ -112,24 +117,14 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
                 return false;
         }
 
-        //create world with given arguments
-        var world = PolarWorld.builder().name(args[1]).environment(environment).difficulty(Difficulty.NORMAL).generator(generator).seed(0L).worldType(worldType).allowPvP(true).spawnAnimals(true).spawnMobs(true).generateStructures(true).loaded(true).build();
-
-        if (world.exists()) {
+        if (worldManager.exists(args[1])) {
             player.sendMessage(messageProvider.getMessage("command.world.create.alreadyExists"));
             return false;
         }
 
-        world.create();
-
-        if (world.getGenerator() != null) {
-            if (world.getGenerator().equals("void")) {
-                //place a bedrock block at the world spawn if the generator is void
-                world.getWorld().setBlockData(world.getWorld().getSpawnLocation(), Material.BEDROCK.createBlockData());
-            }
-        }
-
-        player.sendMessage(messageProvider.getMessage("command.world.create.create-success").replaceText(it -> it.match("%world%").replacement(world.getName())));
+        //create world with given arguments
+        worldManager.createWorld(new WorldMeta(args[1], worldType, environment, generator, 0L, true, true, true, true, true));
+        player.sendMessage(messageProvider.getMessage("command.world.create.create-success").replaceText(it -> it.match("%world%").replacement(args[1])));
         return true;
     }
 
@@ -140,15 +135,15 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
         }
 
         final var world = plugin.getWorldManager().getWorld(args[1]);
-        if (!world.exists()) {
+        if (!worldManager.exists(world)) {
             player.sendMessage(messageProvider.noWorldMessage());
             return false;
         }
 
-        teleportToDefaultWorld(player, world);
+        teleportToDefaultWorld(world);
 
-        world.delete();
-        player.sendMessage(messageProvider.getMessage("command.world.delete.deleted").replaceText(it -> it.match("%world%").replacement(world.getName())));
+        worldManager.deleteWorld(world.meta().getName());
+        player.sendMessage(messageProvider.getMessage("command.world.delete.deleted").replaceText(it -> it.match("%world%").replacement(world.meta().getName())));
         return true;
     }
 
@@ -181,11 +176,11 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
             return false;
         }
 
-        player.sendMessage(messageProvider.getMessage("command.world.information.header").replaceText(it -> it.match("%world%").replacement(world.getName())));
-        player.sendMessage(messageProvider.getMessage("command.world.information.type").replaceText(it -> it.match("%type%").replacement(world.getWorldType().getName())));
+        player.sendMessage(messageProvider.getMessage("command.world.information.header").replaceText(it -> it.match("%world%").replacement(world.meta().getName())));
+        player.sendMessage(messageProvider.getMessage("command.world.information.type").replaceText(it -> it.match("%type%").replacement(world.meta().getWorldType().getName())));
         player.sendMessage(messageProvider.getMessage("command.world.information.players").replaceText(it -> it.match("%players%").replacement(String.valueOf(world.getWorld().getPlayers().size()))));
-        player.sendMessage(messageProvider.getMessage("command.world.information.mobs").replaceText(it -> it.match("%mobs%").replacement(String.valueOf(world.isSpawnMobs()))));
-        player.sendMessage(messageProvider.getMessage("command.world.information.animals").replaceText(it -> it.match("%animals%").replacement(String.valueOf(world.isSpawnAnimals()))));
+        player.sendMessage(messageProvider.getMessage("command.world.information.mobs").replaceText(it -> it.match("%mobs%").replacement(String.valueOf(world.meta().isSpawnMobs()))));
+        player.sendMessage(messageProvider.getMessage("command.world.information.animals").replaceText(it -> it.match("%animals%").replacement(String.valueOf(world.meta().isSpawnAnimals()))));
         return true;
     }
 
@@ -210,7 +205,7 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
 
         final var polarWorld = plugin.getWorldManager().importWorld(args[1]);
 
-        player.sendMessage(messageProvider.getMessage("command.world.import.success").replaceText(text -> text.match("%world%").replacement(polarWorld.getName())));
+        player.sendMessage(messageProvider.getMessage("command.world.import.success").replaceText(text -> text.match("%world%").replacement(polarWorld.meta().getName())));
         return true;
     }
 
@@ -223,7 +218,7 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        worlds.stream().filter(worldName -> plugin.getWorldManager().getWorld(worldName).isLoaded()).forEach(worldName -> player.sendMessage(messageProvider.getMessage("command.world.list.loop").replaceText(text -> text.match("%world%").replacement(worldName))));
+        worlds.stream().filter(worldName -> plugin.getWorldManager().getWorld(worldName).meta().isLoaded()).forEach(worldName -> player.sendMessage(messageProvider.getMessage("command.world.list.loop").replaceText(text -> text.match("%world%").replacement(worldName))));
         return true;
     }
 
@@ -234,15 +229,15 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
         }
 
         PolarWorld world = plugin.getWorldManager().getWorld(args[1]);
-        if (!world.exists()) {
+        if (!this.worldManager.exists(world)) {
             player.sendMessage(messageProvider.noWorldMessage());
             return false;
         }
 
-        teleportToDefaultWorld(player, world);
+        this.teleportToDefaultWorld(world);
 
-        world.unload();
-        player.sendMessage(messageProvider.getMessage("command.world.unload.success").replaceText(text -> text.match("%world%").replacement(world.getName())));
+        this.worldManager.unloadWorld(world.meta().getName());
+        player.sendMessage(messageProvider.getMessage("command.world.unload.success").replaceText(text -> text.match("%world%").replacement(world.meta().getName())));
         return true;
     }
 
@@ -252,25 +247,23 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
             return false;
         }
 
-        PolarWorld world = plugin.getWorldManager().getWorld(args[1]);
-        if (!world.exists()) {
+        final var world = plugin.getWorldManager().getWorld(args[1]);
+        if (!this.worldManager.exists(world)) {
             player.sendMessage(messageProvider.noWorldMessage());
             return false;
         }
 
-        world.load();
-        player.sendMessage(messageProvider.getMessage("command.world.load.success").replaceText(text -> text.match("%world%").replacement(world.getName())));
+        this.worldManager.loadWorld(world.meta().getName());
+        player.sendMessage(messageProvider.getMessage("command.world.load.success").replaceText(text -> text.match("%world%").replacement(world.meta().getName())));
         return true;
     }
 
-    private void teleportToDefaultWorld(Player player, PolarWorld world) {
+    private void teleportToDefaultWorld(PolarWorld world) {
         final var defaultWorld = Bukkit.getWorld(plugin.getDefaultConfig().getConfiguration().getString("default-world"));
-        if (defaultWorld == null) {
-            plugin.getLogger().warning("[PolarWorlds] The configured default world was not found, can't kick players of the world " + world.getName() + "!");
+        if (defaultWorld != null) {
+            world.getWorld().getPlayers().forEach(all -> all.teleport(defaultWorld.getSpawnLocation()));
         } else {
-            for (Player all : world.getWorld().getPlayers()) {
-                all.teleport(defaultWorld.getSpawnLocation());
-            }
+            plugin.getLogger().warning("[PolarWorlds] The configured default world was not found, can't kick players of the world " + world.meta().getName() + "!");
         }
     }
 
