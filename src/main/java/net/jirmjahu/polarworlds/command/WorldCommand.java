@@ -228,7 +228,7 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
             return false;
         }
 
-        PolarWorld world = plugin.getWorldManager().getWorld(args[1]);
+        var world = plugin.getWorldManager().getWorld(args[1]);
         if (!this.worldManager.exists(world)) {
             player.sendMessage(messageProvider.noWorldMessage());
             return false;
@@ -263,7 +263,7 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
         if (defaultWorld != null) {
             world.getWorld().getPlayers().forEach(all -> all.teleport(defaultWorld.getSpawnLocation()));
         } else {
-            plugin.getLogger().warning("[PolarWorlds] The configured default world was not found, can't kick players of the world " + world.meta().getName() + "!");
+            plugin.getLogger().warning("The configured default world was not found, can't kick players of the world " + world.meta().getName() + "!");
         }
     }
 

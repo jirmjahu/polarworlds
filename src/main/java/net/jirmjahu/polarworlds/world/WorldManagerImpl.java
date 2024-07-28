@@ -103,7 +103,11 @@ public class WorldManagerImpl implements WorldManager {
 
     @Override
     public PolarWorld importWorld(String name) {
-        var world = Bukkit.createWorld(new WorldCreator(name));
+        if (Bukkit.getWorld(name) == null) {
+            Bukkit.createWorld(new WorldCreator(name));
+        }
+
+        var world = Bukkit.getWorld(name);
 
         //create a new world meta with the properties of the imported world
         var meta = new WorldMeta(name, world.getWorldType(), world.getEnvironment(), world.getGenerator().toString(), world.getSeed(), world.getPVP(), world.getAllowAnimals(), world.getAllowMonsters(), world.canGenerateStructures(), true);

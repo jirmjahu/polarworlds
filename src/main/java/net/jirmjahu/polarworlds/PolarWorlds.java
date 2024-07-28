@@ -8,6 +8,7 @@ import net.jirmjahu.polarworlds.message.MessageProvider;
 import net.jirmjahu.polarworlds.world.WorldManager;
 import net.jirmjahu.polarworlds.world.WorldManagerImpl;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
@@ -31,6 +32,12 @@ public class PolarWorlds extends JavaPlugin {
         this.messageProvider = new MessageProvider(defaultConfig, configDE, configEN);
 
         this.worldManager = new WorldManagerImpl(this, this.worldsConfig, this.worldsConfig.getConfiguration());
+
+        //add default minecraft worlds to the configuration
+        for (World world : Bukkit.getWorlds()) {
+            worldManager.importWorld(world.getName());
+        }
+
         this.worldManager.loadWorlds();
 
         getCommand("world").setExecutor(new WorldCommand(this, this.worldManager, this.messageProvider));
