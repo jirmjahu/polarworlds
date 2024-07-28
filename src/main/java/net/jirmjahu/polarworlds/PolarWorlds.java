@@ -35,7 +35,7 @@ public class PolarWorlds extends JavaPlugin {
 
         //add default minecraft worlds to the configuration
         for (World world : Bukkit.getWorlds()) {
-            worldManager.importWorld(world.getName());
+          //  worldManager.importWorld(world.getName());
         }
 
         this.worldManager.loadWorlds();

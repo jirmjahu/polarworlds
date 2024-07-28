@@ -28,7 +28,7 @@ public class WorldManagerImpl implements WorldManager {
             worldCreator.generator(new EmptyChunkGenerator());
 
             //place a bedrock block at the world spawn
-            this.getWorld(meta.getName()).getWorld().setBlockData(this.getWorld(meta.getName()).getWorld().getSpawnLocation(), Material.BEDROCK.createBlockData());
+            //todo this.getWorld(meta.getName()).getWorld().setBlockData(this.getWorld(meta.getName()).getWorld().getSpawnLocation(), Material.BEDROCK.createBlockData());
             return;
         } else {
             if (meta.getGenerator() != null) {
