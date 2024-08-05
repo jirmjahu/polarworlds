@@ -1,8 +1,5 @@
 # PolarWorlds
 
-> [!IMPORTANT]  
-> PolarWorlds needs to run on a Paper server with a minimal version of 1.20.4.
-
 ## Installation
 
 To install PolarWorlds, follow these steps:
