@@ -15,5 +15,5 @@ You can customize the Language and various options by editing the configuration 
 ## Todo:
 - [x] Load worlds on Server startup
 - [x] World edit command
-- [] Add standard Minecraft worlds to the configuration
+- [ ] Add standard Minecraft worlds to the configuration
 - [x] Void Generator
