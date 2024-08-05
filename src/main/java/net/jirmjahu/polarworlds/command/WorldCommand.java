@@ -34,6 +34,7 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
     private final WorldImportCommand importCommand;
     private final WorldLoadCommand loadCommand;
     private final WorldUnloadCommand unloadCommand;
+    private final WorldEditCommand editCommand;
 
     public WorldCommand(PolarWorlds plugin, WorldManager worldManager, MessageProvider messageProvider) {
         this.plugin = plugin;
@@ -48,6 +49,7 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
         this.importCommand = new WorldImportCommand(worldManager, messageProvider);
         this.loadCommand = new WorldLoadCommand(worldManager, messageProvider);
         this.unloadCommand = new WorldUnloadCommand(this, worldManager, messageProvider);
+        this.editCommand = new WorldEditCommand(worldManager, messageProvider);
     }
 
     @Override
@@ -85,6 +87,8 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
                 return this.unloadCommand.execute(player, args);
             case "load":
                 return this.loadCommand.execute(player, args);
+            case "edit":
+                return this.editCommand.execute(player, args);
             default:
                 this.sendUsage(player);
                 return false;
@@ -109,12 +113,13 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
         player.sendMessage(messageProvider.getMessage("command.world.usage.list"));
         player.sendMessage(messageProvider.getMessage("command.world.usage.unload"));
         player.sendMessage(messageProvider.getMessage("command.world.usage.load"));
+        player.sendMessage(messageProvider.getMessage("command.world.usage.edit"));
     }
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (args.length == 1) {
-            return Arrays.asList("create", "delete", "teleport", "tp", "information", "import", "list", "unload", "load");
+            return Arrays.asList("create", "delete", "teleport", "tp", "information", "import", "list", "unload", "load", "edit");
         }
 
         if (args.length == 3 && args[0].equalsIgnoreCase("import")) {
@@ -129,7 +134,15 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
             return create;
         }
 
-        if (args.length == 2 && Arrays.asList("teleport", "tp", "delete", "information", "unload", "load").contains(args[0].toLowerCase())) {
+        if (args.length == 3 && args[0].equalsIgnoreCase("edit")) {
+            return List.of("pvp", "spawnAnimals", "spawnMobs");
+        }
+
+        if (args.length == 4 && args[0].equalsIgnoreCase("edit")) {
+            return List.of("true", "false");
+        }
+
+        if (args.length == 2 && Arrays.asList("teleport", "tp", "delete", "information", "unload", "load", "edit").contains(args[0].toLowerCase())) {
             return Bukkit.getWorlds().stream().map(World::getName).collect(Collectors.toList());
         }
 

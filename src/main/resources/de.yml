@@ -30,6 +30,12 @@ command:
       success: "<gray>Du hast die Welt <green>%world% <gray>erfolgreich entladen<dark_gray>."
     load:
       success: "<gray>Du hast die Welt <green>%world% <gray>erfolgreich geladen<dark_gray>."
+    edit:
+      specifyValue: "<gray>Gebe den Wert für <green>%setting% <gray>an<dark_gray>."
+      pvpSuccess: "<gray>Du hast <dark_gray>'<gray>PvP<dark_gray>' <gray> in der Welt <green>%world% <gray>auf <green>%value% <gray>gesetzt<dark_gray>."
+      spawnAnimalsSuccess: "<gray>Du hast <dark_gray>'<gray>Spawn Animals<dark_gray>' <gray> in der Welt <green>%world% <gray>auf <green>%value% <gray>gesetzt<dark_gray>."
+      spawnMobsSuccess: "<gray>Du hast <dark_gray>'<gray>Spawn Mobs<dark_gray>' <gray>in der Welt <green>%world% <gray>auf <green>%value% <gray>gesetzt<dark_gray>."
+      invalidSetting: "<red>Diese Einstellung gibt es nicht!"
     usage:
       create: "<gray>/world create <dark_gray>[<gray>Name<dark_gray>]"
       delete: "<gray>/world delete <dark_gray>[<gray>Name<dark_gray>]"
@@ -39,3 +45,4 @@ command:
       list: "<gray>/world list"
       unload: "<gray>/world unload <dark_gray>[<gray>Name<dark_gray>]"
       load: "<gray>/world load <dark_gray>[<gray>Name<dark_gray>]"
+      edit: "<gray>/world edit <dark_gray>[<gray>Name<dark_gray>] <dark_gray>[<gray>Key<dark_gray>] <dark_gray>[<gray>Value<dark_gray>]"
