@@ -2,8 +2,8 @@ plugins {
     id("java")
 }
 
-group = "net.jirmjahu"
-version = "1.0.7"
+group = "net.jirmjahu.polarworlds"
+version = "1.0.8"
 
 repositories {
     mavenCentral()
