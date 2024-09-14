@@ -39,8 +39,6 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
     public WorldCommand(PolarWorlds plugin, WorldManager worldManager, MessageProvider messageProvider) {
         this.plugin = plugin;
         this.messageProvider = messageProvider;
-
-        //initialize sub commands
         this.createCommand = new WorldCreateCommand(this, worldManager, messageProvider);
         this.deleteCommand = new WorldDeleteCommand(this, worldManager, messageProvider);
         this.teleportCommand = new WorldTeleportCommand(messageProvider);
@@ -71,24 +69,24 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
 
         switch (args[0].toLowerCase()) {
             case "create":
-                return this.createCommand.execute(player, args);
+                return createCommand.execute(player, args);
             case "delete":
-                return this.deleteCommand.execute(player, args);
+                return deleteCommand.execute(player, args);
             case "teleport":
             case "tp":
-                return this.teleportCommand.execute(player, args);
+                return teleportCommand.execute(player, args);
             case "information":
-                return this.informationCommand.execute(player, args);
+                return informationCommand.execute(player, args);
             case "import":
-                return this.importCommand.execute(player, args);
+                return importCommand.execute(player, args);
             case "list":
-                return this.listCommand.execute(player, args);
+                return listCommand.execute(player, args);
             case "unload":
-                return this.unloadCommand.execute(player, args);
+                return unloadCommand.execute(player, args);
             case "load":
-                return this.loadCommand.execute(player, args);
+                return loadCommand.execute(player, args);
             case "edit":
-                return this.editCommand.execute(player, args);
+                return editCommand.execute(player, args);
             default:
                 this.sendUsage(player);
                 return false;
@@ -96,11 +94,12 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
     }
 
     public void teleportToDefaultWorld(PolarWorld world) {
-        final var defaultWorld = Bukkit.getWorld(plugin.getDefaultConfig().getConfiguration().getString("default-world"));
+        World defaultWorld = Bukkit.getWorld(plugin.getDefaultConfig().getConfiguration().getString("default-world"));
         if (defaultWorld == null) {
             plugin.getLogger().warning("The configured default world was not found, can't kick players of the world " + world.meta().getName() + "!");
             return;
         }
+
         world.getWorld().getPlayers().forEach(all -> all.teleport(defaultWorld.getSpawnLocation()));
     }
 

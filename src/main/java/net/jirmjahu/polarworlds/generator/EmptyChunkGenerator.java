@@ -13,7 +13,7 @@ public class EmptyChunkGenerator extends ChunkGenerator {
         return createChunkData(world);
     }
 
-    public String name() {
+    public String getName() {
         return "voidGenerator";
     }
 }

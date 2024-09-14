@@ -5,7 +5,10 @@ import lombok.SneakyThrows;
 import net.jirmjahu.polarworlds.PolarWorlds;
 import net.jirmjahu.polarworlds.config.ConfigManager;
 import net.jirmjahu.polarworlds.generator.EmptyChunkGenerator;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
+import org.bukkit.WorldType;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -16,26 +19,26 @@ import java.util.Set;
 public class WorldManagerImpl implements WorldManager {
 
     private final PolarWorlds plugin;
-    private final ConfigManager saveConfiguration;
     private final FileConfiguration worldsConfig;
 
     @Override
     public void createWorld(WorldMeta meta) {
-        //create new world create with the properties given in the meta
-        var worldCreator = new WorldCreator(meta.getName()).type(meta.getWorldType()).generateStructures(meta.isGenerateStructures()).seed(meta.getSeed());
+        WorldCreator worldCreator = new WorldCreator(meta.getName())
+                .type(meta.getWorldType())
+                .generateStructures(meta.isGenerateStructures())
+                .seed(meta.getSeed());
 
         if ("voidGenerator".equals(meta.getGenerator())) {
             worldCreator.generator(new EmptyChunkGenerator());
 
-            //place a bedrock block at the world spawn
-            //todo this.getWorld(meta.getName()).getWorld().setBlockData(this.getWorld(meta.getName()).getWorld().getSpawnLocation(), Material.BEDROCK.createBlockData());
+            //todo place a bedrock block at the world spawn
+
             return;
-        } else {
-            if (meta.getGenerator() != null) {
-                worldCreator.generator(meta.getGenerator());
-            }
+        } else if (meta.getGenerator() != null) {
+            worldCreator.generator(meta.getGenerator());
         }
-        var world = worldCreator.createWorld();
+
+        World world = worldCreator.createWorld();
         if (world == null) {
             plugin.getLogger().warning("Failed to create world " + meta.getName() + "!");
             return;
@@ -45,141 +48,139 @@ public class WorldManagerImpl implements WorldManager {
         world.setPVP(meta.isAllowPvP());
 
         meta.setLoaded(true);
-
-        //save the created world into the configuration
-        this.save(meta);
+        save(meta);
     }
 
     @Override
     @SneakyThrows
     public void deleteWorld(String name) {
-        var world = this.getWorld(name).getWorld();
-
-        //unload the world
+        World world = getWorld(name).getWorld();
         if (world != null) {
             Bukkit.unloadWorld(world, false);
         }
 
-        //remove the world from the config
-        this.worldsConfig.set("worlds." + world.getName(), null);
-        this.saveConfiguration.save();
+        worldsConfig.set("worlds." + world.getName(), null);
+        plugin.getWorldsConfig().save();
 
-        //delete the world folder
-        var worldFolder = new File(Bukkit.getWorldContainer(), name);
+        File worldFolder = new File(Bukkit.getWorldContainer(), name);
         FileUtils.deleteDirectory(worldFolder);
     }
 
     @Override
     public boolean exists(String name) {
-        return this.getWorlds().contains(name);
+        return getWorlds().contains(name);
     }
 
     @Override
     public PolarWorld getWorld(String name) {
-        var configPath = "worlds." + name + ".";
+        String configPath = "worlds." + name + ".";
         if (!worldsConfig.contains(configPath)) {
             return null;
         }
 
-        //read the world out of the configuration
-        return new PolarWorld(new WorldMeta(name,
-                WorldType.valueOf(this.worldsConfig.getString(configPath + "worldType")),
-                World.Environment.valueOf(this.worldsConfig.getString(configPath + "environment")),
-                this.worldsConfig.getString(configPath + "generator"),
-                this.worldsConfig.getLong(configPath + "seed"),
-                this.worldsConfig.getBoolean(configPath + "allowPvP"),
-                this.worldsConfig.getBoolean(configPath + "spawnAnimals"),
-                this.worldsConfig.getBoolean(configPath + "spawnMobs"),
-                this.worldsConfig.getBoolean(configPath + "generateStructures"), worldsConfig.getBoolean(configPath + "shouldLoad")));
+        return new PolarWorld(new WorldMeta(
+                name,
+                WorldType.valueOf(worldsConfig.getString(configPath + "worldType")),
+                World.Environment.valueOf(worldsConfig.getString(configPath + "environment")),
+                worldsConfig.getString(configPath + "generator"),
+                worldsConfig.getLong(configPath + "seed"),
+                worldsConfig.getBoolean(configPath + "allowPvP"),
+                worldsConfig.getBoolean(configPath + "spawnAnimals"),
+                worldsConfig.getBoolean(configPath + "spawnMobs"),
+                worldsConfig.getBoolean(configPath + "generateStructures"),
+                worldsConfig.getBoolean(configPath + "loaded")));
     }
 
     @Override
     public Set<String> getWorlds() {
-        if (this.worldsConfig == null || !this.worldsConfig.isConfigurationSection("worlds")) {
+        if (worldsConfig == null || !worldsConfig.isConfigurationSection("worlds")) {
             return Set.of();
         }
-        return this.worldsConfig.getConfigurationSection("worlds").getKeys(false);
+        return worldsConfig.getConfigurationSection("worlds").getKeys(false);
     }
 
-    @Override
     public PolarWorld importWorld(String name) {
         if (Bukkit.getWorld(name) == null) {
             Bukkit.createWorld(new WorldCreator(name));
         }
 
-        var world = Bukkit.getWorld(name);
+        World world = Bukkit.getWorld(name);
+        WorldMeta meta = new WorldMeta(
+                name,
+                world.getWorldType(),
+                world.getEnvironment(),
+                world.getGenerator().toString(),
+                world.getSeed(),
+                world.getPVP(),
+                world.getAllowAnimals(),
+                world.getAllowMonsters(),
+                world.canGenerateStructures(),
+                true);
 
-        //create a new world meta with the properties of the imported world
-        var meta = new WorldMeta(name, world.getWorldType(), world.getEnvironment(), world.getGenerator().toString(), world.getSeed(), world.getPVP(), world.getAllowAnimals(), world.getAllowMonsters(), world.canGenerateStructures(), true);
-
-        //finally create the polarWorld and return it
-        this.createWorld(meta);
-        return this.getWorld(name);
+        createWorld(meta);
+        return getWorld(name);
     }
 
     @Override
     public void loadWorld(String name) {
-        if (this.exists(name)) {
-            var world = this.getWorld(name);
+        if (exists(name)) {
+            PolarWorld world = getWorld(name);
             world.meta().setLoaded(true);
-            this.save(world);
-
-            //create the world
+            save(world);
             Bukkit.createWorld(new WorldCreator(name));
         }
     }
 
     @Override
     public void loadWorlds() {
-        if (!this.worldsConfig.contains("worlds")) {
+        if (!worldsConfig.contains("worlds")) {
             plugin.getLogger().info("There are no worlds to load.");
             return;
         }
 
-        final var worlds = this.getWorlds();
+        plugin.getLogger().info("Loading " + getWorlds().size() + " worlds...");
 
-        plugin.getLogger().info("Loading " + worlds.size() + " worlds...");
-
-        //load all worlds found in the configuration
-        for (var worldName : worlds) {
-
-            var world = this.getWorld(worldName);
-
+        for (String worldName : getWorlds()) {
+            PolarWorld world = getWorld(worldName);
             if (!world.meta().isLoaded()) {
                 continue;
             }
 
-            this.createWorld(world.meta());
+            createWorld(world.meta());
             plugin.getLogger().info("[PolarWorlds] Successfully loaded world " + worldName + ".");
         }
     }
 
     @Override
     public void unloadWorld(String name) {
-        if (this.exists(name)) {
-            var world = this.getWorld(name);
+        if (exists(name)) {
+            PolarWorld world = getWorld(name);
             world.meta().setLoaded(false);
-            this.save(world);
-
-            //create the world
+            save(world);
             Bukkit.unloadWorld(world.getWorld(), false);
         }
     }
 
     @Override
     public void save(WorldMeta meta) {
-        var configPath = "worlds." + meta.getName() + ".";
+        String configPath = "worlds." + meta.getName() + ".";
+        worldsConfig.set(configPath + "generator", meta.getGenerator());
+        worldsConfig.set(configPath + "seed", meta.getSeed());
+        worldsConfig.set(configPath + "worldType", meta.getWorldType().toString());
+        worldsConfig.set(configPath + "environment", meta.getEnvironment().toString());
+        worldsConfig.set(configPath + "allowPvP", meta.isAllowPvP());
+        worldsConfig.set(configPath + "spawnAnimals", meta.isSpawnAnimals());
+        worldsConfig.set(configPath + "spawnMobs", meta.isSpawnMobs());
+        worldsConfig.set(configPath + "generateStructures", meta.isGenerateStructures());
+        worldsConfig.set(configPath + "loaded", meta.isLoaded());
 
-        this.worldsConfig.set(configPath + "generator", meta.getGenerator());
-        this.worldsConfig.set(configPath + "seed", meta.getSeed());
-        this.worldsConfig.set(configPath + "worldType", meta.getWorldType().toString());
-        this.worldsConfig.set(configPath + "environment", meta.getEnvironment().toString());
-        this.worldsConfig.set(configPath + "allowPvP", meta.isAllowPvP());
-        this.worldsConfig.set(configPath + "spawnAnimals", meta.isSpawnAnimals());
-        this.worldsConfig.set(configPath + "spawnMobs", meta.isSpawnMobs());
-        this.worldsConfig.set(configPath + "generateStructures", meta.isGenerateStructures());
-        this.worldsConfig.set(configPath + "loaded", meta.isLoaded());
+        plugin.getWorldsConfig().save();
+    }
 
-        this.saveConfiguration.save();
+    @Override
+    public void saveWorlds() {
+        for (String worldName : getWorlds()) {
+            save(getWorld(worldName));
+        }
     }
 }

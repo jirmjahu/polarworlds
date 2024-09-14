@@ -57,7 +57,7 @@ public class WorldCreateCommand implements SubCommand {
             case "void":
                 worldType = WorldType.NORMAL;
                 environment = World.Environment.NORMAL;
-                generator = new EmptyChunkGenerator().name();
+                generator = new EmptyChunkGenerator().getName();
                 break;
             default:
                 parent.sendUsage(player);
@@ -70,7 +70,16 @@ public class WorldCreateCommand implements SubCommand {
         }
 
         //create world with given arguments
-        worldManager.createWorld(new WorldMeta(args[1], worldType, environment, generator, 0L, true, true, true, true, true));
+        worldManager.createWorld(new WorldMeta(args[1],
+                worldType,
+                environment,
+                generator, 0L,
+                true,
+                true,
+                true,
+                true,
+                true));
+
         player.sendMessage(messageProvider.getMessage("command.world.create.create-success").replaceText(it -> it.match("%world%").replacement(args[1])));
         return true;
     }

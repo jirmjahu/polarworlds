@@ -11,7 +11,7 @@ public interface WorldManager {
     boolean exists(String name);
 
     default boolean exists(PolarWorld world) {
-        return this.exists(world.meta().getName());
+        return exists(world.meta().getName());
     }
 
     PolarWorld getWorld(String name);
@@ -29,6 +29,9 @@ public interface WorldManager {
     void save(WorldMeta meta);
 
     default void save(PolarWorld world) {
-        this.save(world.meta());
+        save(world.meta());
     }
+
+    void saveWorlds();
+
 }
