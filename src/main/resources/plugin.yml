@@ -1,8 +1,9 @@
 name: PolarWorlds
-version: 1.0.7
+version: 1.0.8
 main: net.jirmjahu.polarworlds.PolarWorlds
 author: jirmjahu
-api-version: '1.20'
+api-version: '1.21.1'
+
 commands:
   world:
     permission: polarworlds.command.world
